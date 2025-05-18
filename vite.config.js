@@ -3,6 +3,8 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueDevTools from "vite-plugin-vue-devtools";
 
+import { BASE_URL } from "./src/assets/baseUrl";
+
 export default defineConfig({
   plugins: [
     vue(),
@@ -16,5 +18,5 @@ export default defineConfig({
   define: {
     __VUE_DEVTOOLS__: false,
   },
-  base: "/cos30043/s104186810/project",
+  base: BASE_URL,
 });

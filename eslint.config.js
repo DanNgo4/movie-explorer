@@ -28,6 +28,7 @@ export default [
   {
     rules: {
       ...pluginVue.configs["flat/essential"].rules,
+      "no-unused-vars": "off",
       "vue/multi-word-component-names": "off", // Turn off multi-word component rule
     },
   },

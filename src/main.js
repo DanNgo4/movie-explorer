@@ -1,11 +1,22 @@
-import './assets/main.css'
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap";
+import "./assets/main.css";
 
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
 
-const app = createApp(App)
+import PrimeVue from "primevue/config";
 
-app.use(router)
+import "@fortawesome/fontawesome-free/css/all.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
-app.mount('#app')
+const app = createApp(App);
+
+app.use(PrimeVue);
+
+router.afterEach((to) => {
+  document.title = "Movie Explorer | " + (to.meta.title || "Home");
+});
+
+app.use(router).mount("#app");

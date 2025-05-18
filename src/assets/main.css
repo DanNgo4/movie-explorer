@@ -1,5 +1,9 @@
 @import "./base.css";
 
+#app {
+  font-weight: normal;
+}
+
 a,
 .green {
   text-decoration: none;
@@ -8,12 +12,22 @@ a,
   padding: 3px;
 }
 
+p {
+  margin: 0px;
+}
+
+.custom-tiered-menu {
+  background-color: rgb(7, 27, 46) !important;
+  border: 1px solid #DDD;
+  border-radius: 0.25rem;
+}
+
+main {
+  /* min-height: 70vh; */
+}
+
 @media (hover: hover) {
   a:hover {
     background-color: hsla(209, 78%, 49%, 0.2);
   }
-}
-
-main {
-  min-height: 70vh;
 }
