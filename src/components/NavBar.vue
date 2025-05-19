@@ -4,7 +4,7 @@ import { RouterLink } from "vue-router";
 
 import { TieredMenu } from "primevue";
 
-import { BASE_URL } from "@/assets/baseUrl";
+const baseUrl = import.meta.env.BASE_URL;
 
 const menuRef = ref(null);
 
@@ -18,7 +18,7 @@ const pages = [
 <template>
   <header class="d-flex flex-row align-items-center justify-content-between px-5 py-2 bg-primary-subtle">
     <a
-      :href=BASE_URL
+      :href="`${baseUrl}`"
       @click.prevent="$router.push('/')"
       class="fs-4 fw-bold bg-transparent cursor-pointer"
     >
