@@ -52,7 +52,7 @@ const pages = [
             custom
           >
             <a
-              :href="`${BASE_URL}${item.route}`"
+              :href="`${baseUrl}${item.route}`"
             >
               {{ item.label }}
             </a>
