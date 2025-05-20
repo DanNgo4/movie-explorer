@@ -6,6 +6,12 @@ const news = ref([]);
 const first = ref(0);
 const rows = ref(3);
 
+const searchTitle = ref("");
+const searchContent = ref("");
+const searchCategory = ref("");
+const startDate = ref("");
+const endDate = ref("");
+
 onMounted(async () => {
   try {
     const response = await fetch(`${import.meta.env.BASE_URL}/news.json`);
@@ -16,49 +22,188 @@ onMounted(async () => {
   }
 });
 
+const filteredNews = computed(() => {
+  return news.value.filter(article => {
+    const titleMatch = article.title
+      .toLowerCase()
+      .includes(searchTitle.value.toLowerCase());
+
+    const contentMatch = article.content
+      .toLowerCase()
+      .includes(searchContent.value.toLowerCase());
+
+    const categoryMatch = article.category
+      .toLowerCase()
+      .includes(searchCategory.value.toLowerCase());
+
+    const articleDate = new Date(article.date);
+    const isAfterStartDate = !startDate.value || articleDate >= new Date(startDate.value);
+    const isBeforeEndDate = !endDate.value || articleDate <= new Date(endDate.value);
+    const dateMatch = isAfterStartDate && isBeforeEndDate;
+
+    return titleMatch && contentMatch && categoryMatch && dateMatch;
+  });
+});
+
 const pagedNews = computed(() => {
-  return news.value.slice(first.value, first.value + rows.value);
+  return filteredNews.value.slice(first.value, first.value + rows.value);
 });
 
 function onPage(event) {
   first.value = event.first;
   rows.value = event.rows;
 }
+
+const categories = computed(() => {
+  return [...new Set(news.value.map(article => article.category))];
+});
+
+const truncateContent = (content, maxLength = 300) => {
+  if (content.length <= maxLength) return content;
+  return content.slice(0, maxLength) + "...";
+};
 </script>
 
 <template>
-  <ul class="list-group mb-3">
-    <li
-      v-for="item in pagedNews"
-      :key="item.id || item.title"
-      class="list-group-item"
-    >
-      {{ item.title }}
-    </li>
-  </ul>
+  <article class="news-container">
+    <section class="search-filters mb-4">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label for="titleSearch" class="form-label">Title</label>
 
-  <Paginator
-    :rows="rows"
-    :totalRecords="news.length"
-    :rowsPerPageOptions="[1, 3, 5]"
-    :showFirstLastPageLink="true"
-    :showPageLinks="true"
-    :showCurrentPageReport="true"
-    @page="onPage"
-  />
+          <input id="titleSearch"
+                 type="text"
+                 v-model="searchTitle"
+                 placeholder="Search by title..."
+                 class="form-control" />
+        </div>
 
-  <!-- <Paginator
-    :first="first"
-    :rows="rows"
-    :total-records="news.length"
-    :page-link-size="3"
-    :rows-per-page-options="[10, 20, 50]"
-    :show-first-last-page-link="true"
-    :show-page-links="true"
-    :show-current-page-report="true"
-    @page="onPage"
-  /> -->
+        <div class="col-md-3">
+          <label for="contentSearch" class="form-label">Content</label>
+
+          <input id="contentSearch"
+                 type="text"
+                 v-model="searchContent"
+                 placeholder="Search by content..."
+                 class="form-control" />
+        </div>
+
+        <div class="col-md-2">
+          <label for="categorySelect" class="form-label">Category</label>
+
+          <select
+            id="categorySelect"
+            v-model="searchCategory"
+            class="form-select"
+          >
+            <option value="">All Categories</option>
+
+            <option
+              v-for="category in categories"
+              :key="category"
+              :value="category"
+            >
+              {{ category }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label for="startDate" class="form-label">Start Date</label>
+
+          <input id="startDate"
+                 type="date"
+                 v-model="startDate"
+                 class="form-control" />
+        </div>
+
+        <div class="col-md-2">
+          <label for="endDate" class="form-label">End Date</label>
+
+          <input id="endDate"
+                 type="date"
+                 v-model="endDate"
+                 class="form-control" />
+        </div>
+      </div>
+    </section>
+
+    <section class="news-list">
+      <div
+        v-for="article in pagedNews"
+        :key="article.title"
+        class="card mb-3"
+      >
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <h5 class="card-title">{{ article.title }}</h5>
+            <span class="badge bg-primary">{{ article.category }}</span>
+          </div>
+
+          <h6 class="card-subtitle mb-2 text-muted">
+            {{ new Date(article.date).toLocaleDateString() }}
+          </h6>
+
+          <p class="card-text">{{ truncateContent(article.content) }}</p>
+
+          <div class="mt-2">
+            <a
+              v-if="article.source"
+              :href="article.source"
+              target="_blank"
+              class="card-link"
+            >
+              Read full article
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <Paginator :rows="rows"
+               :totalRecords="filteredNews.length"
+               :rowsPerPageOptions="[3, 5, 10]"
+               :showFirstLastPageLink="true"
+               :showPageLinks="true"
+               :showCurrentPageReport="true"
+               @page="onPage"
+               class="mt-3" />
+  </article>
 </template>
 
 <style scoped>
+.news-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.search-filters {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.card {
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.badge {
+  font-size: 0.8rem;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.card-link {
+  text-decoration: underline;
+  color: blue;
+}
 </style>
