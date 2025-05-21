@@ -1,13 +1,16 @@
 import path from "path";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import vueDevTools from "vite-plugin-vue-devtools";
+import ssr from "vite-plugin-ssr/plugin";
 
 export default defineConfig({
   plugins: [
     vue(),
-    vueDevTools(),
+    ssr()
   ],
+  ssr: {
+    noExternal: ['primevue']  // bundle PrimeVue for SSR to avoid ESM import issues
+  },
   resolve: {
     alias: {
       "@": path.resolve("src/"),
@@ -17,4 +20,13 @@ export default defineConfig({
     __VUE_DEVTOOLS__: false,
   },
   base: "/cos30043/s104186810/project",
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, '')
+      }
+    }
+  }
 });
