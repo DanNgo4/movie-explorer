@@ -1,6 +1,12 @@
 <script setup>
 import { ref, computed } from "vue";
 
+import { useHead } from "@vueuse/head";
+
+useHead({
+  title: "Movie Explorer | About"
+});
+
 const firstName = ref("");
 const lastName = ref("");
 const selectedImage = ref("mountain");

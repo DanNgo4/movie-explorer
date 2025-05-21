@@ -1,10 +1,14 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { RouterLink } from "vue-router";
 
 import { TieredMenu } from "primevue";
 
-const baseUrl = import.meta.env.BASE_URL;
+const baseUrl = ref("");
+
+onMounted(() => {
+  baseUrl.value = window.location.origin;
+});
 
 const menuRef = ref(null);
 
@@ -26,12 +30,25 @@ const pages = [
     </a>
 
     <nav class="d-none d-lg-flex gap-3 align-items-center">
-      <RouterLink
+      <!-- <RouterLink
         v-for="page in pages"
         :key="page.route"
         :to="page.route"
       >
         {{ page.label }}
+      </RouterLink> -->
+      <RouterLink
+        v-for="page in pages"
+        :key="page.route"
+        :to="page.route"
+        custom
+      >
+        <a
+          :href="`${baseUrl}${page.route}`"
+          class="text-decoration-none text-primary"
+        >
+          {{ page.label }}
+        </a>
       </RouterLink>
     </nav>
 

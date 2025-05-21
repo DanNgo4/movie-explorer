@@ -1,35 +1,33 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap";
-import "./assets/styles/main.css";
+import { createSSRApp } from "vue";
+import { createHead } from "@vueuse/head";
 
-import { createApp } from "vue";
 import App from "./App.vue";
-import router from "./router";
+
+import { createRouter } from "./router";
 
 import PrimeVue from "primevue/config";
 import Aura from '@primeuix/themes/aura';
-/* import "@primevue/themes/saga-blue/theme.css";
-import "primevue/resources/primevue.css";
-import "primeicons/primeicons.css"; */
 
-import "@fortawesome/fontawesome-free/css/all.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+// SSR requires a fresh app instance per request, therefore we export a function
+export function createApp() {
+  const app = createSSRApp(App);
 
-const app = createApp(App);
+  const head = createHead();
+  app.use(head);
 
-app.use(PrimeVue, {
-  theme: {
-    preset: Aura,
-    options: {
-      prefix: 'p',
-      darkModeSelector: false,
-      cssLayer: false
+  const router = createRouter();
+  app.use(router);
+
+  app.use(PrimeVue, {
+    theme: {
+      preset: Aura,
+      options: {
+        prefix: "p",
+        darkModeSelector: false,
+        cssLayer: false
+      }
     }
-  }
-});
+  });
 
-router.afterEach((to) => {
-  document.title = "Movie Explorer | " + (to.meta.title || "Home");
-});
-
-app.use(router).mount("#app");
+  return { app, router, head };
+}

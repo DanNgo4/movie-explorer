@@ -2,6 +2,12 @@
 import { ref, onMounted, computed } from "vue";
 import Paginator from "primevue/paginator";
 
+import { useHead } from "@vueuse/head";
+
+useHead({
+  title: "Movie Explorer | News"
+});
+
 const news = ref([]);
 const first = ref(0);
 const rows = ref(3);
@@ -14,7 +20,11 @@ const endDate = ref("");
 
 onMounted(async () => {
   try {
-    const response = await fetch(`${import.meta.env.BASE_URL}/news.json`);
+    const publicPath = import.meta.env.BASE_URL;
+    const origin     = window.location.origin;
+    const fullBase   = origin + publicPath;
+
+    const response = await fetch(`${fullBase}/news.json`);
 
     news.value = (await response.json()).news;
   } catch (error) {

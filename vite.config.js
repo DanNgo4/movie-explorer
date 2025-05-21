@@ -1,13 +1,20 @@
 import path from "path";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import vueDevTools from "vite-plugin-vue-devtools";
 
 export default defineConfig({
   plugins: [
     vue(),
-    vueDevTools(),
   ],
+  build: {
+    outDir: 'dist',
+    rollupOptions: {
+      input: 'index.html'
+    }
+  },
+  ssr: {
+    noExternal: ["primevue", "@primeuix/themes"]
+  },
   resolve: {
     alias: {
       "@": path.resolve("src/"),

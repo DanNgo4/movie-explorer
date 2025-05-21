@@ -1,4 +1,9 @@
 <script setup>
+import { useHead } from "@vueuse/head";
+
+useHead({
+  title: "Movie Explorer | Home"
+});
 </script>
 
 <template>
