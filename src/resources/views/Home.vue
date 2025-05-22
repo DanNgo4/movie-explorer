@@ -1,4 +1,14 @@
 <script setup>
+import { onMounted } from "vue";
+
+import { store } from "@/store";
+
+import * as MovieMutations from "@/infrastructure/mutations/movie-mutations";
+
+onMounted(async () => {
+  await MovieMutations.list();
+  console.log(store.movies);
+});
 </script>
 
 <template>
