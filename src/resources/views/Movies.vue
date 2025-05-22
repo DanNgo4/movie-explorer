@@ -31,6 +31,7 @@ const pagedMovies = computed(() => {
 function onPage(event) {
   first.value = event.first;
   rows.value = event.rows;
+
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 </script>

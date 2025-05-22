@@ -20,6 +20,14 @@ const router = createRouter({
     },
 
     {
+      path: "/movies/:id",
+      name: "movie-details",
+      component: () => import("@/resources/views/MovieDetails.vue"),
+      props: true,
+      meta: { title: "Movie Details" }
+    },
+
+    {
       path: "/news",
       name: "news",
       component: () => import("@/resources/views/News.vue"),

@@ -18,6 +18,21 @@ async function list() {
   }
 }
 
+async function retrieve(id) {
+  const url = `https://api.themoviedb.org/3/movie/${id}?api_key=d83946a92b810bbfb1605d3282f61181`;
+
+  try {
+    const response = await fetch(url);
+    const movie = await response.json();
+
+    return movie;
+  } catch (error) {
+    console.error(error);
+    return Promise.reject(error);
+  }
+}
+
 export {
-  list
+  list,
+  retrieve,
 };

@@ -16,6 +16,11 @@ async function list() {
   }
 }
 
+async function retrieve(id) {
+  store.curentMovie = await MovieService.retrieve(id);
+}
+
 export {
   list,
+  retrieve,
 };
