@@ -1,15 +1,9 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
-
-import { store } from "@/store";
+import { ref, computed } from "vue";
 
 const firstName = ref("");
 const lastName = ref("");
 const selectedImage = ref("mountain");
-
-onMounted(() => {
-  console.log(store.movies);
-});
 
 const welcomeMessage = computed(() => {
   if (firstName.value || lastName.value) {

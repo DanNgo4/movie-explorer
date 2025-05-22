@@ -9,9 +9,10 @@ const baseUrl = import.meta.env.BASE_URL;
 const menuRef = ref(null);
 
 const pages = [
-  { label: "Home",  route: "/"     },
-  { label: "News",  route: "/news" },
-  { label: "About", route: "/about" }
+  { label: "Home",   route: "/"     },
+  { label: "Movies", route: "/movies"     },
+  { label: "News",   route: "/news" },
+  { label: "About",  route: "/about" }
 ];
 </script>
 
@@ -34,6 +35,11 @@ const pages = [
         {{ page.label }}
       </RouterLink>
     </nav>
+
+    <section class="d-none d-lg-flex gap-3 align-items-center">
+      <h1>log in</h1>
+      <h1>sign up</h1>
+    </section>
 
     <section class="d-flex d-lg-none align-items-center">
       <button class="btn btn-link p-0" @click="menuRef.toggle($event)">

@@ -13,6 +13,13 @@ const router = createRouter({
     },
 
     {
+      path: "/movies",
+      name: "movies",
+      component: () => import("@/resources/views/Movies.vue"),
+      meta: { title: "Movies" }
+    },
+
+    {
       path: "/news",
       name: "news",
       component: () => import("@/resources/views/News.vue"),
