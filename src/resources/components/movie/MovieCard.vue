@@ -10,23 +10,27 @@ const props = defineProps({
 });
 
 const truncatedOverview = computed(() => {
-  const max = 100;
+  const max = 120;
   const ovr = props.movie.overview || "";
   return ovr.length > max ? ovr.slice(0, max) + "…" : ovr;
 });
 </script>
 
 <template>
-  <div class="movie-card">
-    <RouterLink :to="{ name: 'movie-details', params: { id: movie.id } }">
+  <div class="card h-100 movie-card">
+    <RouterLink :to="{ name: 'movie-details', params: { id: movie.id } }" class="text-decoration-none">
       <img :src="`https://image.tmdb.org/t/p/original/${movie.poster_path}`"
            :alt="movie.title"
-           class="movie-image" />
+           class="card-img-top" />
 
-      <div class="movie-details">
-        <h2 class="movie-title">{{ movie.title }}</h2>
+      <div class="card-body">
+        <h5 class="card-title text-dark">
+          {{ movie.title }}
+        </h5>
 
-        <p class="movie-overview">{{ truncatedOverview }}</p>
+        <p class="card-text text-secondary">
+          {{ truncatedOverview }}
+        </p>
       </div>
     </RouterLink>
   </div>
@@ -34,38 +38,16 @@ const truncatedOverview = computed(() => {
 
 <style scoped>
 .movie-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
-}
-
-.movie-card a:hover {
-  background-color: transparent;
 }
 
 .movie-card:hover {
   transform: scale(1.02);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
-.movie-image {
-  width: 100%;
+.card-img-top {
   height: auto;
-  display: block;
-}
-
-.movie-details {
-  padding: 16px;
-}
-
-.movie-title {
-  font-size: 1rem;
-  margin: 0 0 8px;
-}
-
-.movie-overview {
-  font-size: 1rem;
-  color: #555;
+  object-fit: cover;
 }
 </style>
