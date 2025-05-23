@@ -18,6 +18,7 @@ async function list() {
 
 async function retrieve(id) {
   store.currentMovie = await MovieService.retrieve(id);
+  localStorage.setItem(Constants.LOCAL_STORAGE_CURRENT_MOVIE, JSON.stringify(store.currentMovie));
 }
 
 export {

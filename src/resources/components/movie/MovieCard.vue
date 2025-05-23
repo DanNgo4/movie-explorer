@@ -18,7 +18,7 @@ const truncatedOverview = computed(() => {
 
 <template>
   <div class="card h-100 movie-card">
-    <RouterLink :to="{ name: 'movie-details', params: { id: movie.id } }" class="text-decoration-none">
+    <RouterLink :to="{ name: 'movie-details', params: { id: movie.id } }" class="text-decoration-none movie-link">
       <img :src="`https://image.tmdb.org/t/p/original/${movie.poster_path}`"
            :alt="movie.title"
            class="card-img-top" />
@@ -44,6 +44,10 @@ const truncatedOverview = computed(() => {
 .movie-card:hover {
   transform: scale(1.02);
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.movie-link:hover {
+  background-color: transparent !important;
 }
 
 .card-img-top {

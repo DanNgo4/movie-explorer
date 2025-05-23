@@ -37,8 +37,13 @@ const pages = [
     </nav>
 
     <section class="d-none d-lg-flex gap-3 align-items-center">
-      <h1>log in</h1>
-      <h1>sign up</h1>
+      <RouterLink :to="'/login'">
+        Log In
+      </RouterLink>
+
+      <RouterLink id="signup" :to="'/signup'" class="border border-1 border-black px-2 py-1 rounded">
+        Sign Up
+      </RouterLink>
     </section>
 
     <section class="d-flex d-lg-none align-items-center">
