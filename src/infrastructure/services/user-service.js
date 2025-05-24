@@ -21,14 +21,11 @@ async function add(userData) {
 
 async function authenticate(email, password) {
   try {
-    const response = await fetch(`${API_URL}/email/${email}`);
-    const result = await response.json();
+    const user = await retrieve(email);
 
-    if (!result || result.length === 0) {
+    if (!user) {
       return { success: false, error: "User not found" };
     }
-
-    const user = result[0];
 
     if (user.password !== password) {
       return { success: false, error: "Invalid password" };
@@ -55,28 +52,8 @@ async function retrieve(email) {
   }
 }
 
-async function update(fieldName, value, userData) {
-  try {
-    const response = await fetch(`${API_URL}/${fieldName}/${value}`, {
-      method: "PUT",
-
-      headers: {
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify(userData)
-    });
-
-    return await response.text();
-  } catch (error) {
-      console.error(error);
-      return Promise.reject(error);
-  }
-}
-
 export {
   add,
   authenticate,
   retrieve,
-  update,
 };

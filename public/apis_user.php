@@ -46,8 +46,6 @@ switch ($method) {
     $sql = "update `$table` set $set where ".($key?"$fld='$key'":"0=1"); break;
   case 'POST':
     $sql = "insert into `$table` set $set"; break;
-  case 'DELETE':
-    $sql = "delete from `$table` where ".($key?"$fld='$key'":"0=1"); break;
 }
 
 // execute SQL statement

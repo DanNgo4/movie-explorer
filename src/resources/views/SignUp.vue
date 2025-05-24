@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed } from "vue";
 import { RouterLink, useRouter } from "vue-router";
+
+import { store } from "@/store";
+
 import * as UserMutation from "@/infrastructure/mutations/user-mutation";
 
 const router = useRouter();
@@ -31,24 +34,28 @@ const validateName = (name, field) => {
     errors.value[field] = "This field is required";
     return false;
   }
+
   if (name.length < 2) {
     errors.value[field] = "Must be at least 2 characters";
     return false;
   }
+
   errors.value[field] = "";
   return true;
 };
 
 const validateEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email) {
     errors.value.email = "Email is required";
     return false;
   }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     errors.value.email = "Please enter a valid email";
     return false;
   }
+
   errors.value.email = "";
   return true;
 };
@@ -58,22 +65,27 @@ const validatePassword = (password) => {
     errors.value.password = "Password is required";
     return false;
   }
+
   if (password.length < 6) {
     errors.value.password = "Password must be at least 6 characters";
     return false;
   }
+
   if (!/[A-Z]/.test(password)) {
     errors.value.password = "Password must contain at least one uppercase letter";
     return false;
   }
+
   if (!/[a-z]/.test(password)) {
     errors.value.password = "Password must contain at least one lowercase letter";
     return false;
   }
+
   if (!/[0-9]/.test(password)) {
     errors.value.password = "Password must contain at least one number";
     return false;
   }
+
   errors.value.password = "";
   return true;
 };
@@ -83,10 +95,12 @@ const validateConfirmPassword = () => {
     errors.value.confirmPassword = "Please confirm your password";
     return false;
   }
+
   if (form.value.password !== form.value.confirmPassword) {
     errors.value.confirmPassword = "Passwords do not match";
     return false;
   }
+
   errors.value.confirmPassword = "";
   return true;
 };
@@ -103,49 +117,34 @@ const handleSubmit = async () => {
   const isPasswordValid = validatePassword(form.value.password);
   const isConfirmPasswordValid = validateConfirmPassword();
 
-  if (isFirstNameValid && isLastNameValid && isEmailValid &&
-      isPasswordValid && isConfirmPasswordValid) {
-
+  if (isFirstNameValid
+   && isLastNameValid
+   && isEmailValid
+   && isPasswordValid
+   && isConfirmPasswordValid
+  ) {
     isLoading.value = true;
     errorMessage.value = "";
     successMessage.value = "";
 
     try {
-      // Prepare user data for signup
       const userData = {
         firstName: form.value.firstName,
         lastName: form.value.lastName,
         email: form.value.email,
         password: form.value.password,
-        // Add any other fields your API expects
       };
 
-      const result = await UserMutation.signup(userData);
+      await UserMutation.signup(userData);
 
-      if (result.success) {
-        if (result.user) {
-          // User was automatically logged in after signup
-          console.log('Signup and login successful:', result.user);
-          successMessage.value = "Account created successfully! Redirecting...";
+      console.log("Signup and login successful:", store.currentUser);
+      successMessage.value = "Account created successfully! Redirecting...";
 
-          // Redirect to home page after a short delay
-          setTimeout(() => {
-            router.push('/');
-          }, 1500);
-        } else {
-          // Account created but needs to login manually
-          successMessage.value = result.message || "Account created successfully! Please log in.";
-
-          // Redirect to login page after a short delay
-          setTimeout(() => {
-            router.push('/login');
-          }, 2000);
-        }
-      } else {
-        errorMessage.value = result.error || "Failed to create account. Please try again.";
-      }
+      setTimeout(() => {
+        router.push("/");
+      }, 1500);
     } catch (error) {
-      console.error('Signup error:', error);
+      console.error("Signup error:", error);
       errorMessage.value = "An unexpected error occurred. Please try again.";
     } finally {
       isLoading.value = false;
@@ -162,12 +161,10 @@ const handleSubmit = async () => {
           <div class="card-body p-4 p-md-5">
             <h2 class="text-center mb-4">Create Account</h2>
 
-            <!-- Success message display -->
             <div v-if="successMessage" class="alert alert-success" role="alert">
               {{ successMessage }}
             </div>
 
-            <!-- Error message display -->
             <div v-if="errorMessage" class="alert alert-danger" role="alert">
               {{ errorMessage }}
             </div>
@@ -197,7 +194,10 @@ const handleSubmit = async () => {
                 </div>
 
                 <div class="col-md-6 mb-3">
-                  <label for="lastName" class="form-label">Last Name</label>
+                  <label for="lastName" class="form-label">
+                    Last Name
+                  </label>
+
                   <input
                     type="text"
                     class="form-control"
@@ -209,6 +209,7 @@ const handleSubmit = async () => {
                     placeholder="Enter your last name"
                     :disabled="isLoading"
                   />
+                  
                   <div class="invalid-feedback">{{ errors.lastName }}</div>
                 </div>
               </div>

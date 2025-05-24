@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 
+import { store } from "@/store";
 import * as UserMutation from "@/infrastructure/mutations/user-mutation";
 
 const router = useRouter();
@@ -9,6 +10,7 @@ const email = ref("");
 const password = ref("");
 const showPassword = ref(false);
 const errorMessage = ref("");
+const successMessage = ref("");
 const isLoading = ref(false);
 
 const handleSubmit = async () => {
@@ -19,14 +21,18 @@ const handleSubmit = async () => {
 
   isLoading.value = true;
   errorMessage.value = "";
+  successMessage.value = "";
 
   try {
     const result = await UserMutation.login(email.value, password.value);
 
     if (result.success) {
       console.log("Login successful:", result.user);
+      successMessage.value = "Login successful! Redirecting...";
 
-      router.push("/");
+      setTimeout(() => {
+        router.push("/");
+      }, 1500);
     } else {
       if (result.error === "User not found") {
         errorMessage.value = "No account found with this email. Please sign up to create a new account.";
@@ -52,6 +58,10 @@ const handleSubmit = async () => {
         <div class="card border-0 shadow-sm">
           <div class="card-body p-4 p-md-5">
             <h2 class="text-center mb-4">Welcome Back</h2>
+
+            <div v-if="successMessage" class="alert alert-success" role="alert">
+              {{ successMessage }}
+            </div>
 
             <div v-if="errorMessage" class="alert alert-danger" role="alert">
               {{ errorMessage }}
