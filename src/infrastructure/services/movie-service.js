@@ -137,11 +137,36 @@ async function addReview(reviewData) {
 }
 
 async function updateReview(reviewData) {
+  try {
+    const response = await fetch(`${API_URL}/id/${reviewData.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(reviewData)
+    });
 
+    return await response.text();
+  } catch (error) {
+    console.error(error);
+    return Promise.reject(error);
+  }
 }
 
 async function deleteReview(id) {
+  try {
+    const response = await fetch(`${API_URL}/id/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
 
+    return await response.text();
+  } catch (error) {
+    console.error(error);
+    return Promise.reject(error);
+  }
 }
 
 export {

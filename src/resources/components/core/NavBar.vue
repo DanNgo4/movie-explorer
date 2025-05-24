@@ -103,7 +103,13 @@ const logout = () => {
         <span class="small">Hi {{ store.currentUser.firstName }}</span>
       </div>
 
-      <button class="btn btn-link p-0" @click="menuRef.toggle($event)">
+      <button
+        class="btn btn-link p-0"
+        @click="menuRef.toggle($event)"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
         <i class="bi bi-list fs-3"></i>
       </button>
 
@@ -112,6 +118,8 @@ const logout = () => {
         popup
         ref="menuRef"
         class="custom-tiered-menu"
+        id="mobile-menu"
+        role="menu"
       >
         <template #item="{ item }">
           <RouterLink

@@ -31,9 +31,9 @@ async function updateReview(reviewData) {
   retrieve(reviewData.movieId);
 }
 
-async function deleteReview(id) {
-  await MovieService.deleteReview(id);
-  retrieve(id);
+async function deleteReview(reviewId) {
+  await MovieService.deleteReview(reviewId);
+  retrieve(store.currentMovie.id);
 }
 
 export {

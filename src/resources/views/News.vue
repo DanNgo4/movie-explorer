@@ -67,65 +67,81 @@ const truncateContent = (content, maxLength = 300) => {
 <template>
   <article class="news-container">
     <section class="search-filters mb-4">
-      <div class="row g-3">
-        <div class="col-md-3">
-          <label for="titleSearch" class="form-label">Title</label>
+      <form role="search" aria-label="Filter news articles">
+        <fieldset>
+          <legend class="h5 mb-3">Filter News Articles</legend>
 
-          <input id="titleSearch"
-                 type="text"
-                 v-model="searchTitle"
-                 placeholder="Search by title..."
-                 class="form-control" />
-        </div>
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label for="titleSearch" class="form-label">Title</label>
 
-        <div class="col-md-3">
-          <label for="contentSearch" class="form-label">Content</label>
+            <input id="titleSearch"
+                   type="text"
+                   v-model="searchTitle"
+                   placeholder="Search by title..."
+                   class="form-control"
+                   aria-describedby="titleSearch-help" />
+            <div id="titleSearch-help" class="form-text">Search for specific words in article titles</div>
+          </div>
 
-          <input id="contentSearch"
-                 type="text"
-                 v-model="searchContent"
-                 placeholder="Search by content..."
-                 class="form-control" />
-        </div>
+          <div class="col-md-3">
+            <label for="contentSearch" class="form-label">Content</label>
 
-        <div class="col-md-2">
-          <label for="categorySelect" class="form-label">Category</label>
+            <input id="contentSearch"
+                   type="text"
+                   v-model="searchContent"
+                   placeholder="Search by content..."
+                   class="form-control"
+                   aria-describedby="contentSearch-help" />
+            <div id="contentSearch-help" class="form-text">Search within article content</div>
+          </div>
 
-          <select
-            id="categorySelect"
-            v-model="searchCategory"
-            class="form-select"
-          >
-            <option value="">All Categories</option>
+          <div class="col-md-2">
+            <label for="categorySelect" class="form-label">Category</label>
 
-            <option
-              v-for="category in categories"
-              :key="category"
-              :value="category"
+            <select
+              id="categorySelect"
+              v-model="searchCategory"
+              class="form-select"
+              aria-describedby="categorySelect-help"
             >
-              {{ category }}
-            </option>
-          </select>
+              <option value="">All Categories</option>
+
+              <option
+                v-for="category in categories"
+                :key="category"
+                :value="category"
+              >
+                {{ category }}
+              </option>
+            </select>
+            <div id="categorySelect-help" class="form-text">Filter by article category</div>
+          </div>
+
+          <div class="col-md-2">
+            <label for="startDate" class="form-label">Start Date</label>
+
+            <input id="startDate"
+                   type="date"
+                   v-model="startDate"
+                   class="form-control"
+                   aria-describedby="startDate-help" />
+            <div id="startDate-help" class="form-text">Articles from this date onwards</div>
+          </div>
+
+          <div class="col-md-2">
+            <label for="endDate" class="form-label">End Date</label>
+
+            <input id="endDate"
+                   type="date"
+                   v-model="endDate"
+                   class="form-control"
+                   aria-describedby="endDate-help" />
+            <div id="endDate-help" class="form-text">Articles up to this date</div>
+          </div>
         </div>
-
-        <div class="col-md-2">
-          <label for="startDate" class="form-label">Start Date</label>
-
-          <input id="startDate"
-                 type="date"
-                 v-model="startDate"
-                 class="form-control" />
-        </div>
-
-        <div class="col-md-2">
-          <label for="endDate" class="form-label">End Date</label>
-
-          <input id="endDate"
-                 type="date"
-                 v-model="endDate"
-                 class="form-control" />
-        </div>
-      </div>
+        </fieldset>
+      </form>
     </section>
 
     <section class="news-list">

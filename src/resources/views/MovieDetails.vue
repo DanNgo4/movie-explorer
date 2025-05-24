@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, defineProps, computed } from "vue";
-import { useRouter, RouterLink } from "vue-router";
+import { RouterLink } from "vue-router";
 
 import { store } from "@/store";
 
@@ -15,7 +15,6 @@ const props = defineProps({
   },
 });
 
-const router = useRouter();
 const isLoading = ref(true);
 const movieId = Number(props.id);
 
@@ -26,6 +25,16 @@ const reviewForm = ref({
 const isSubmittingReview = ref(false);
 const reviewError = ref("");
 const reviewSuccess = ref("");
+
+const editingReviewId = ref(null);
+const editForm = ref({
+  review: "",
+  rating: 10
+});
+const isUpdatingReview = ref(false);
+
+const deletingReviewId = ref(null);
+const isConfirmingDelete = ref(false);
 
 onMounted(async () => {
   try {
@@ -118,6 +127,80 @@ const getUserName = (review) => {
 const isCurrentUserReview = (review) => {
   return store.currentUser && review.userId === store.currentUser.id;
 };
+
+const startEdit = (review) => {
+  editingReviewId.value = review.id;
+  editForm.value.review = review.review;
+  editForm.value.rating = review.rating;
+};
+
+const cancelEdit = () => {
+  editingReviewId.value = null;
+  editForm.value.review = "";
+  editForm.value.rating = 10;
+};
+
+const updateReview = async (reviewId) => {
+  if (!editForm.value.review.trim()) {
+    reviewError.value = "Please write a review.";
+    return;
+  }
+
+  isUpdatingReview.value = true;
+  reviewError.value = "";
+  reviewSuccess.value = "";
+
+  try {
+    const reviewData = {
+      id: reviewId,
+      movieId: movieId,
+      userId: store.currentUser.id,
+      review: editForm.value.review.trim(),
+      rating: editForm.value.rating
+    };
+
+    await MovieMutations.updateReview(reviewData);
+
+    reviewSuccess.value = "Review updated successfully!";
+    cancelEdit();
+
+    setTimeout(() => {
+      reviewSuccess.value = "";
+    }, 3000);
+  } catch (error) {
+    console.error("Failed to update review:", error);
+    reviewError.value = "Failed to update review. Please try again.";
+  } finally {
+    isUpdatingReview.value = false;
+  }
+};
+
+const confirmDelete = (reviewId) => {
+  deletingReviewId.value = reviewId;
+  isConfirmingDelete.value = true;
+};
+
+const cancelDelete = () => {
+  deletingReviewId.value = null;
+  isConfirmingDelete.value = false;
+};
+
+const deleteReview = async () => {
+  if (!deletingReviewId.value) return;
+
+  try {
+    await MovieMutations.deleteReview(deletingReviewId.value);
+    reviewSuccess.value = "Review deleted successfully!";
+    cancelDelete();
+
+    setTimeout(() => {
+      reviewSuccess.value = "";
+    }, 3000);
+  } catch (error) {
+    console.error("Failed to delete review:", error);
+    reviewError.value = "Failed to delete review. Please try again.";
+  }
+};
 </script>
 
 <template>
@@ -204,43 +287,50 @@ const isCurrentUserReview = (review) => {
             </div>
 
             <form @submit.prevent="submitReview">
-              <div class="mb-3">
-                <label for="rating" class="form-label">Rating (0-10)</label>
-                <input
-                  type="number"
-                  id="rating"
-                  v-model.number="reviewForm.rating"
-                  class="form-control"
-                  min="0"
-                  max="10"
-                  step="1"
-                  :disabled="isSubmittingReview"
-                  required
-                />
-                <div class="form-text">Rate this movie from 0 (terrible) to 10 (excellent)</div>
-              </div>
+              <fieldset :disabled="isSubmittingReview">
+                <legend class="visually-hidden">Submit Movie Review</legend>
 
-              <div class="mb-3">
-                <label for="review" class="form-label">Review</label>
-                <textarea
-                  id="review"
-                  v-model="reviewForm.review"
-                  class="form-control"
-                  rows="4"
-                  placeholder="Write your review here..."
-                  :disabled="isSubmittingReview"
-                  required
-                ></textarea>
-              </div>
+                <div class="mb-3">
+                  <label for="rating" class="form-label">Rating (0-10)</label>
+                  <input
+                    type="number"
+                    id="rating"
+                    v-model.number="reviewForm.rating"
+                    class="form-control"
+                    min="0"
+                    max="10"
+                    step="1"
+                    :disabled="isSubmittingReview"
+                    required
+                    aria-describedby="rating-help"
+                  />
+                  <div class="form-text" id="rating-help">Rate this movie from 0 (terrible) to 10 (excellent)</div>
+                </div>
 
-              <button
-                type="submit"
-                class="btn btn-primary"
-                :disabled="isSubmittingReview || !reviewForm.review.trim()"
-              >
-                <span v-if="isSubmittingReview" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                {{ isSubmittingReview ? 'Submitting...' : 'Submit Review' }}
-              </button>
+                <div class="mb-3">
+                  <label for="review" class="form-label">Review</label>
+                  <textarea
+                    id="review"
+                    v-model="reviewForm.review"
+                    class="form-control"
+                    rows="4"
+                    placeholder="Write your review here..."
+                    :disabled="isSubmittingReview"
+                    required
+                    aria-describedby="review-help"
+                  ></textarea>
+                  <div class="form-text" id="review-help">Share your thoughts about this movie</div>
+                </div>
+
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  :disabled="isSubmittingReview || !reviewForm.review.trim()"
+                >
+                  <span v-if="isSubmittingReview" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  {{ isSubmittingReview ? 'Submitting...' : 'Submit Review' }}
+                </button>
+              </fieldset>
             </form>
           </div>
 
@@ -273,7 +363,7 @@ const isCurrentUserReview = (review) => {
                     >
                       {{ review.rating }}/10
                     </span>
-                    <div class="progress mt-1" style="height: 6px; width: 100px;">
+                    <div class="progress mt-1" style="height: 6px; width: 100px;" role="progressbar" :aria-valuenow="review.rating" aria-valuemin="0" aria-valuemax="10" :aria-label="`Rating: ${review.rating} out of 10`">
                       <div
                         class="progress-bar"
                         :class="{
@@ -286,9 +376,84 @@ const isCurrentUserReview = (review) => {
                     </div>
                   </div>
                 </div>
+
+                <div v-if="isCurrentUserReview(review)" class="d-flex gap-2">
+                  <button
+                    v-if="editingReviewId !== review.id"
+                    @click="startEdit(review)"
+                    class="btn btn-sm btn-outline-primary"
+                    :disabled="isUpdatingReview"
+                  >
+                    <i class="bi bi-pencil"></i> Edit
+                  </button>
+                  <button
+                    v-if="editingReviewId !== review.id"
+                    @click="confirmDelete(review.id)"
+                    class="btn btn-sm btn-outline-danger"
+                  >
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
+                </div>
               </div>
 
-              <p class="mb-0">{{ review.review }}</p>
+              <div v-if="editingReviewId === review.id">
+                <form @submit.prevent="updateReview(review.id)">
+                  <fieldset :disabled="isUpdatingReview">
+                    <legend class="visually-hidden">Edit Review</legend>
+
+                  <div class="mb-3">
+                    <label :for="`edit-rating-${review.id}`" class="form-label">Rating (0-10)</label>
+                    <input
+                      type="number"
+                      :id="`edit-rating-${review.id}`"
+                      v-model.number="editForm.rating"
+                      class="form-control"
+                      min="0"
+                      max="10"
+                      step="1"
+                      :disabled="isUpdatingReview"
+                      required
+                      aria-describedby="edit-rating-help"
+                    />
+                    <div class="form-text" id="edit-rating-help">Update your rating from 0 to 10</div>
+                  </div>
+                  <div class="mb-3">
+                    <label :for="`edit-review-${review.id}`" class="form-label">Review</label>
+                    <textarea
+                      :id="`edit-review-${review.id}`"
+                      v-model="editForm.review"
+                      class="form-control"
+                      rows="3"
+                      :disabled="isUpdatingReview"
+                      required
+                      aria-describedby="edit-review-help"
+                    ></textarea>
+                    <div class="form-text" id="edit-review-help">Update your review text</div>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button
+                      type="submit"
+                      class="btn btn-primary btn-sm"
+                      :disabled="isUpdatingReview || !editForm.review.trim()"
+                    >
+                      <span v-if="isUpdatingReview" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      {{ isUpdatingReview ? 'Updating...' : 'Update' }}
+                    </button>
+                    <button
+                      type="button"
+                      @click="cancelEdit"
+                      class="btn btn-secondary btn-sm"
+                      :disabled="isUpdatingReview"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  </fieldset>
+                </form>
+              </div>
+              <div v-else>
+                <p class="mb-0">{{ review.review }}</p>
+              </div>
             </div>
           </div>
 
@@ -302,6 +467,27 @@ const isCurrentUserReview = (review) => {
         </div>
       </div>
     </article>
+
+    <div v-if="isConfirmingDelete" class="modal d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="delete-modal-title">Confirm Delete</h5>
+            <button type="button" class="btn-close" @click="cancelDelete" aria-label="Close dialog"></button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete this review? This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="cancelDelete">Cancel</button>
+            <button type="button" class="btn btn-danger" @click="deleteReview" aria-describedby="delete-warning">
+              <i class="bi bi-trash"></i> Delete Review
+            </button>
+            <div id="delete-warning" class="visually-hidden">This action cannot be undone</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

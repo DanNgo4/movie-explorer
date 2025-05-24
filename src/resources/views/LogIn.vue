@@ -59,68 +59,74 @@ const handleSubmit = async () => {
           <div class="card-body p-4 p-md-5">
             <h2 class="text-center mb-4">Welcome Back</h2>
 
-            <div v-if="successMessage" class="alert alert-success" role="alert">
+            <div v-if="successMessage" class="alert alert-success" role="alert" aria-live="polite">
               {{ successMessage }}
             </div>
 
-            <div v-if="errorMessage" class="alert alert-danger" role="alert">
+            <div v-if="errorMessage" class="alert alert-danger" role="alert" aria-live="assertive">
               {{ errorMessage }}
             </div>
 
             <form @submit.prevent="handleSubmit">
-              <div class="mb-3">
-                <label for="email" class="form-label">Email Address</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  id="email"
-                  v-model="email"
-                  required
-                  placeholder="Enter your email"
-                  autocomplete="email"
-                  :disabled="isLoading"
-                />
-              </div>
+              <fieldset :disabled="isLoading">
+                <legend class="visually-hidden">User Login Form</legend>
 
-              <div class="mb-4">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-group">
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email Address</label>
                   <input
-                    :type="showPassword ? 'text' : 'password'"
+                    type="email"
                     class="form-control"
-                    id="password"
-                    v-model="password"
+                    id="email"
+                    v-model="email"
                     required
-                    placeholder="Enter your password"
-                    autocomplete="current-password"
+                    placeholder="Enter your email"
+                    autocomplete="email"
                     :disabled="isLoading"
                   />
-
-                  <button
-                    class="btn btn-outline-secondary"
-                    type="button"
-                    @click="showPassword = !showPassword"
-                    :disabled="isLoading"
-                  >
-                    <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-                  </button>
                 </div>
-              </div>
 
-              <button type="submit" class="btn btn-primary w-100 mb-3" :disabled="isLoading">
-                <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                {{ isLoading ? 'Logging in...' : 'Log In' }}
-              </button>
+                <div class="mb-4">
+                  <label for="password" class="form-label">Password</label>
+                  <div class="input-group">
+                    <input
+                      :type="showPassword ? 'text' : 'password'"
+                      class="form-control"
+                      id="password"
+                      v-model="password"
+                      required
+                      placeholder="Enter your password"
+                      autocomplete="current-password"
+                      :disabled="isLoading"
+                    />
 
-              <p class="text-center mb-0">
-                Don't have an account?
-                <RouterLink
-                  to="/signup"
-                  class="text-decoration-underline text-primary"
-                >
-                  Sign Up
-                </RouterLink>
-              </p>
+                    <button
+                      class="btn btn-outline-secondary"
+                      type="button"
+                      @click="showPassword = !showPassword"
+                      :disabled="isLoading"
+                      :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                      :aria-pressed="showPassword"
+                    >
+                      <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 mb-3" :disabled="isLoading">
+                  <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  {{ isLoading ? 'Logging in...' : 'Log In' }}
+                </button>
+
+                <p class="text-center mb-0">
+                  Don't have an account?
+                  <RouterLink
+                    to="/signup"
+                    class="text-decoration-underline text-primary"
+                  >
+                    Sign Up
+                  </RouterLink>
+                </p>
+              </fieldset>
             </form>
           </div>
         </div>

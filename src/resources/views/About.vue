@@ -34,7 +34,7 @@ const images = {
       <h1 class="display-5 mb-4">About Movie Explorer</h1>
 
       <p class="lead mb-4">
-        Movie Explorer is your ultimate destination for discovering and exploring the world of cinema. My platform provides up-to-date information about movies, from classic masterpieces to the latest releases. Stay informed with our news section and explore our extensive movie database.
+        Movie Explorer is your ultimate destination for discovering and exploring the world of cinema. My platform provides up-to-date information about movies, from classic masterpieces to the latest releases. Stay informed with my news section and explore the extensive movie database.
       </p>
     </section>
 

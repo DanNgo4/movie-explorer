@@ -161,145 +161,159 @@ const handleSubmit = async () => {
           <div class="card-body p-4 p-md-5">
             <h2 class="text-center mb-4">Create Account</h2>
 
-            <div v-if="successMessage" class="alert alert-success" role="alert">
+            <div v-if="successMessage" class="alert alert-success" role="alert" aria-live="polite">
               {{ successMessage }}
             </div>
 
-            <div v-if="errorMessage" class="alert alert-danger" role="alert">
+            <div v-if="errorMessage" class="alert alert-danger" role="alert" aria-live="assertive">
               {{ errorMessage }}
             </div>
 
             <form @submit.prevent="handleSubmit" novalidate>
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="firstName" class="form-label">
-                    First Name
-                  </label>
+              <fieldset :disabled="isLoading">
+                <legend class="visually-hidden">User Registration Form</legend>
 
-                  <input
-                    type="text"
-                    class="form-control"
-                    :class="{ 'is-invalid': errors.firstName }"
-                    id="firstName"
-                    v-model="form.firstName"
-                    @blur="validateName(form.firstName, 'firstName')"
-                    required
-                    placeholder="Enter your first name"
-                    :disabled="isLoading"
-                  />
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="firstName" class="form-label">
+                      First Name
+                    </label>
 
-                  <div class="invalid-feedback">
-                    {{ errors.firstName }}
+                    <input
+                      type="text"
+                      class="form-control"
+                      :class="{ 'is-invalid': errors.firstName }"
+                      id="firstName"
+                      v-model="form.firstName"
+                      @blur="validateName(form.firstName, 'firstName')"
+                      required
+                      placeholder="Enter your first name"
+                      :disabled="isLoading"
+                      aria-describedby="firstName-error"
+                    />
+
+                    <div class="invalid-feedback" id="firstName-error">
+                      {{ errors.firstName }}
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label for="lastName" class="form-label">
+                      Last Name
+                    </label>
+
+                    <input
+                      type="text"
+                      class="form-control"
+                      :class="{ 'is-invalid': errors.lastName }"
+                      id="lastName"
+                      v-model="form.lastName"
+                      @blur="validateName(form.lastName, 'lastName')"
+                      required
+                      placeholder="Enter your last name"
+                      :disabled="isLoading"
+                      aria-describedby="lastName-error"
+                    />
+
+                    <div class="invalid-feedback" id="lastName-error">{{ errors.lastName }}</div>
                   </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                  <label for="lastName" class="form-label">
-                    Last Name
+                <div class="mb-3">
+                  <label for="email" class="form-label">
+                    Email Address
                   </label>
 
                   <input
-                    type="text"
+                    type="email"
                     class="form-control"
-                    :class="{ 'is-invalid': errors.lastName }"
-                    id="lastName"
-                    v-model="form.lastName"
-                    @blur="validateName(form.lastName, 'lastName')"
+                    :class="{ 'is-invalid': errors.email }"
+                    id="email"
+                    v-model="form.email"
+                    @blur="validateEmail(form.email)"
                     required
-                    placeholder="Enter your last name"
+                    placeholder="Enter your email"
+                    autocomplete="email"
                     :disabled="isLoading"
+                    aria-describedby="email-error"
                   />
-                  
-                  <div class="invalid-feedback">{{ errors.lastName }}</div>
+
+                  <div class="invalid-feedback" id="email-error">
+                    {{ errors.email }}
+                  </div>
                 </div>
-              </div>
 
-              <div class="mb-3">
-                <label for="email" class="form-label">
-                  Email Address
-                </label>
-
-                <input
-                  type="email"
-                  class="form-control"
-                  :class="{ 'is-invalid': errors.email }"
-                  id="email"
-                  v-model="form.email"
-                  @blur="validateEmail(form.email)"
-                  required
-                  placeholder="Enter your email"
-                  autocomplete="email"
-                  :disabled="isLoading"
-                />
-
-                <div class="invalid-feedback">
-                  {{ errors.email }}
+                <div class="mb-3">
+                  <label for="password" class="form-label">Password</label>
+                  <div class="input-group">
+                    <input
+                      :type="showPassword ? 'text' : 'password'"
+                      class="form-control"
+                      :class="{ 'is-invalid': errors.password }"
+                      id="password"
+                      v-model="form.password"
+                      @blur="validatePassword(form.password)"
+                      required
+                      placeholder="Enter your password"
+                      autocomplete="new-password"
+                      :disabled="isLoading"
+                      aria-describedby="password-help password-error"
+                    />
+                    <button
+                      class="btn btn-outline-secondary"
+                      type="button"
+                      @click="showPassword = !showPassword"
+                      :disabled="isLoading"
+                      :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                      :aria-pressed="showPassword"
+                    >
+                      <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                    </button>
+                    <div class="invalid-feedback" id="password-error">{{ errors.password }}</div>
+                  </div>
+                  <div class="form-text" id="password-help">
+                    Password must be at least 6 characters and contain uppercase, lowercase, and numeric characters.
+                  </div>
                 </div>
-              </div>
 
-              <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-group">
+                <div class="mb-4">
+                  <label for="confirmPassword" class="form-label">Confirm Password</label>
                   <input
                     :type="showPassword ? 'text' : 'password'"
                     class="form-control"
-                    :class="{ 'is-invalid': errors.password }"
-                    id="password"
-                    v-model="form.password"
-                    @blur="validatePassword(form.password)"
+                    :class="{ 'is-invalid': errors.confirmPassword }"
+                    id="confirmPassword"
+                    v-model="form.confirmPassword"
+                    @blur="validateConfirmPassword"
                     required
-                    placeholder="Enter your password"
+                    placeholder="Confirm your password"
                     autocomplete="new-password"
                     :disabled="isLoading"
+                    aria-describedby="confirmPassword-error"
                   />
-                  <button
-                    class="btn btn-outline-secondary"
-                    type="button"
-                    @click="showPassword = !showPassword"
-                    :disabled="isLoading"
-                  >
-                    <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-                  </button>
-                  <div class="invalid-feedback">{{ errors.password }}</div>
+                  <div class="invalid-feedback" id="confirmPassword-error">{{ errors.confirmPassword }}</div>
                 </div>
-              </div>
 
-              <div class="mb-4">
-                <label for="confirmPassword" class="form-label">Confirm Password</label>
-                <input
-                  :type="showPassword ? 'text' : 'password'"
-                  class="form-control"
-                  :class="{ 'is-invalid': errors.confirmPassword }"
-                  id="confirmPassword"
-                  v-model="form.confirmPassword"
-                  @blur="validateConfirmPassword"
-                  required
-                  placeholder="Confirm your password"
-                  autocomplete="new-password"
-                  :disabled="isLoading"
-                />
-                <div class="invalid-feedback">{{ errors.confirmPassword }}</div>
-              </div>
-
-              <button
-                type="submit"
-                class="btn btn-primary w-100 mb-3"
-                :disabled="!isValid || isLoading"
-              >
-                <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                {{ isLoading ? 'Creating Account...' : 'Sign Up' }}
-              </button>
-
-              <p class="text-center mb-0">
-                Already have an account?
-
-                <RouterLink
-                  to="/login"
-                  class="text-decoration-underline text-primary"
+                <button
+                  type="submit"
+                  class="btn btn-primary w-100 mb-3"
+                  :disabled="!isValid || isLoading"
                 >
-                  Log In
-                </RouterLink>
-              </p>
+                  <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  {{ isLoading ? 'Creating Account...' : 'Sign Up' }}
+                </button>
+
+                <p class="text-center mb-0">
+                  Already have an account?
+
+                  <RouterLink
+                    to="/login"
+                    class="text-decoration-underline text-primary"
+                  >
+                    Log In
+                  </RouterLink>
+                </p>
+              </fieldset>
             </form>
           </div>
         </div>
