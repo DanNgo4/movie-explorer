@@ -58,17 +58,19 @@ const hasUserReviewed = computed(() => {
   if (!store.currentUser || !store.currentMovie.reviews) {
     return false;
   }
-  return store.currentMovie.reviews.some(review => review.user_id === store.currentUser.id);
+  return store.currentMovie.reviews.some(review => review.userId === store.currentUser.id);
+});
+
+const userReviewsCount = computed(() => {
+  if (!store.currentUser || !store.currentMovie.reviews) {
+    return 0;
+  }
+  return store.currentMovie.reviews.filter(review => review.userId === store.currentUser.id).length;
 });
 
 const submitReview = async () => {
   if (!store.currentUser) {
     reviewError.value = "Please log in to submit a review.";
-    return;
-  }
-
-  if (hasUserReviewed.value) {
-    reviewError.value = "You have already reviewed this movie.";
     return;
   }
 
@@ -83,8 +85,8 @@ const submitReview = async () => {
 
   try {
     const reviewData = {
-      movie_id: movieId,
-      user_id: store.currentUser.id,
+      movieId: movieId,
+      userId: store.currentUser.id,
       review: reviewForm.value.review.trim(),
       rating: reviewForm.value.rating
     };
@@ -110,11 +112,11 @@ const getUserName = (review) => {
   if (review.user && review.user.firstName && review.user.lastName) {
     return `${review.user.firstName} ${review.user.lastName}`;
   }
-  return `User ${review.user_id}`;
+  return `User ${review.userId}`;
 };
 
 const isCurrentUserReview = (review) => {
-  return store.currentUser && review.user_id === store.currentUser.id;
+  return store.currentUser && review.userId === store.currentUser.id;
 };
 </script>
 
@@ -184,62 +186,62 @@ const isCurrentUserReview = (review) => {
 
         <div class="card-body">
           <div v-if="store.currentUser" class="mb-4">
-            <div v-if="hasUserReviewed" class="alert alert-info">
-              <i class="bi bi-check-circle me-2"></i>
-              You have already reviewed this movie. Thank you for your feedback!
+            <div v-if="userReviewsCount > 0" class="alert alert-info mb-3">
+              <i class="bi bi-info-circle me-2"></i>
+              You have written {{ userReviewsCount }} review{{ userReviewsCount > 1 ? 's' : '' }} for this movie.
             </div>
 
-            <div v-else>
-              <h5 class="mb-3">Write a Review</h5>
+            <h5 class="mb-3">
+              {{ userReviewsCount > 0 ? 'Write Another Review' : 'Write a Review' }}
+            </h5>
 
-              <div v-if="reviewSuccess" class="alert alert-success" role="alert">
-                {{ reviewSuccess }}
-              </div>
-
-              <div v-if="reviewError" class="alert alert-danger" role="alert">
-                {{ reviewError }}
-              </div>
-
-              <form @submit.prevent="submitReview">
-                <div class="mb-3">
-                  <label for="rating" class="form-label">Rating (0-10)</label>
-                  <input
-                    type="number"
-                    id="rating"
-                    v-model.number="reviewForm.rating"
-                    class="form-control"
-                    min="0"
-                    max="10"
-                    step="1"
-                    :disabled="isSubmittingReview"
-                    required
-                  />
-                  <div class="form-text">Rate this movie from 0 (terrible) to 10 (excellent)</div>
-                </div>
-
-                <div class="mb-3">
-                  <label for="review" class="form-label">Review</label>
-                  <textarea
-                    id="review"
-                    v-model="reviewForm.review"
-                    class="form-control"
-                    rows="4"
-                    placeholder="Write your review here..."
-                    :disabled="isSubmittingReview"
-                    required
-                  ></textarea>
-                </div>
-
-                <button
-                  type="submit"
-                  class="btn btn-primary"
-                  :disabled="isSubmittingReview || !reviewForm.review.trim()"
-                >
-                  <span v-if="isSubmittingReview" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  {{ isSubmittingReview ? 'Submitting...' : 'Submit Review' }}
-                </button>
-              </form>
+            <div v-if="reviewSuccess" class="alert alert-success" role="alert">
+              {{ reviewSuccess }}
             </div>
+
+            <div v-if="reviewError" class="alert alert-danger" role="alert">
+              {{ reviewError }}
+            </div>
+
+            <form @submit.prevent="submitReview">
+              <div class="mb-3">
+                <label for="rating" class="form-label">Rating (0-10)</label>
+                <input
+                  type="number"
+                  id="rating"
+                  v-model.number="reviewForm.rating"
+                  class="form-control"
+                  min="0"
+                  max="10"
+                  step="1"
+                  :disabled="isSubmittingReview"
+                  required
+                />
+                <div class="form-text">Rate this movie from 0 (terrible) to 10 (excellent)</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="review" class="form-label">Review</label>
+                <textarea
+                  id="review"
+                  v-model="reviewForm.review"
+                  class="form-control"
+                  rows="4"
+                  placeholder="Write your review here..."
+                  :disabled="isSubmittingReview"
+                  required
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-primary"
+                :disabled="isSubmittingReview || !reviewForm.review.trim()"
+              >
+                <span v-if="isSubmittingReview" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                {{ isSubmittingReview ? 'Submitting...' : 'Submit Review' }}
+              </button>
+            </form>
           </div>
 
           <div v-else class="alert alert-info mb-4">

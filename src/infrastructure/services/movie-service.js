@@ -22,7 +22,7 @@ async function list() {
 
 async function retrieve(id) {
   const url1 = `https://api.themoviedb.org/3/movie/${id}?api_key=d83946a92b810bbfb1605d3282f61181`;
-  const url2 = `${API_URL}/movie_id/${id}`;
+  const url2 = `${API_URL}/movieId/${id}`;
 
   try {
     const [response1, response2] = await Promise.all([

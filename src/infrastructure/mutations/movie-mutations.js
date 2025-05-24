@@ -23,12 +23,12 @@ async function retrieve(id) {
 
 async function addReview(reviewData) {
   await MovieService.addReview(reviewData);
-  retrieve(reviewData.movie_id);
+  retrieve(reviewData.movieId);
 }
 
 async function updateReview(reviewData) {
   await MovieService.updateReview(reviewData);
-  retrieve(reviewData.movie_id);
+  retrieve(reviewData.movieId);
 }
 
 async function deleteReview(id) {
