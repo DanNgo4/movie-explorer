@@ -14,31 +14,61 @@ const truncatedOverview = computed(() => {
   const ovr = props.movie.overview || "";
   return ovr.length > max ? ovr.slice(0, max) + "…" : ovr;
 });
+
+const movieRating = computed(() => {
+  return props.movie.vote_average ? props.movie.vote_average.toFixed(1) : 'N/A';
+});
+
+const releaseYear = computed(() => {
+  return props.movie.release_date
+    ? new Date(props.movie.release_date).getFullYear()
+    : '';
+});
 </script>
 
 <template>
-  <div class="card h-100 movie-card">
-    <RouterLink :to="{ name: 'movie-details', params: { id: movie.id } }" class="text-decoration-none movie-link">
-      <img :src="`https://image.tmdb.org/t/p/original/${movie.poster_path}`"
-           :alt="movie.title"
-           class="card-img-top" />
+  <article class="card h-100 movie-card">
+    <RouterLink
+      :to="{ name: 'movie-details', params: { id: movie.id } }"
+      class="text-decoration-none movie-link"
+      :aria-label="`View details for ${movie.title}${releaseYear ? ` (${releaseYear})` : ''}`"
+    >
+      <img
+        :src="`https://image.tmdb.org/t/p/original/${movie.poster_path}`"
+        :alt="`${movie.title} movie poster${releaseYear ? ` from ${releaseYear}` : ''}`"
+        class="card-img-top"
+        loading="lazy"
+      />
 
       <div class="card-body">
-        <h5 class="card-title text-dark">
+        <h3 class="card-title text-dark h5">
           {{ movie.title }}
-        </h5>
+          <span v-if="releaseYear" class="text-muted fs-6">({{ releaseYear }})</span>
+        </h3>
+
+        <div v-if="movie.vote_average" class="d-flex align-items-center mb-2">
+          <span class="badge bg-warning text-dark me-2" role="img" :aria-label="`Rating: ${movieRating} out of 10`">
+            <i class="bi bi-star-fill me-1" aria-hidden="true"></i>
+            {{ movieRating }}
+          </span>
+        </div>
 
         <p class="card-text text-secondary">
           {{ truncatedOverview }}
         </p>
+
+        <span class="visually-hidden">
+          Click to view more details about {{ movie.title }}
+        </span>
       </div>
     </RouterLink>
-  </div>
+  </article>
 </template>
 
 <style scoped>
 .movie-card {
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
 }
 
 .movie-card:hover {
@@ -46,12 +76,33 @@ const truncatedOverview = computed(() => {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
+.movie-card:focus-within {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
 .movie-link:hover {
   background-color: transparent !important;
 }
 
+.movie-link:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
+
 .card-img-top {
-  height: auto;
+  height: 400px;
   object-fit: cover;
+}
+
+.badge {
+  font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .card-img-top {
+    height: 300px;
+  }
 }
 </style>
