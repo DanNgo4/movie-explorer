@@ -1,18 +1,18 @@
-const API_URL = `${import.meta.env.BASE_URL}/apis_user.php`;
+import { Constants } from "@/constants";
 
-async function add(userData) {
+async function add(model) {
   try {
-    const response = await fetch(`${API_URL}/`, {
+    await fetch(`${Constants.API_URL_USER}/`, {
       method: "POST",
 
       headers: {
         "Content-Type": "application/json",
       },
 
-      body: JSON.stringify(userData)
+      body: JSON.stringify(model)
     });
 
-    return await response.text();
+    return Promise.resolve();
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
@@ -42,9 +42,9 @@ async function authenticate(email, password) {
 
 async function retrieve(email) {
   try {
-    const response = await fetch(`${API_URL}/email/${email}`);
-    const result = await response.json();
+    const response = await fetch(`${Constants.API_URL_USER}/email/${email}`);
 
+    const result = await response.json();
     return result[0];
   } catch (error) {
     console.error(error);

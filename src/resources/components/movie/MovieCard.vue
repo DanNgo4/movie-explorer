@@ -2,6 +2,8 @@
 import { defineProps, computed } from "vue";
 import { RouterLink } from "vue-router";
 
+import { Constants } from "@/constants";
+
 const props = defineProps({
   movie: {
     type: Object,
@@ -11,30 +13,33 @@ const props = defineProps({
 
 const truncatedOverview = computed(() => {
   const max = 120;
-  const ovr = props.movie.overview || "";
-  return ovr.length > max ? ovr.slice(0, max) + "…" : ovr;
+  const overview = props.movie.overview || "";
+
+  return overview.length > max
+    ? overview.slice(0, max) + "…"
+    : overview;
 });
 
 const movieRating = computed(() => {
-  return props.movie.vote_average ? props.movie.vote_average.toFixed(1) : 'N/A';
+  return props.movie.vote_average ? props.movie.vote_average.toFixed(1) : "N/A";
 });
 
 const releaseYear = computed(() => {
   return props.movie.release_date
     ? new Date(props.movie.release_date).getFullYear()
-    : '';
+    : "";
 });
 </script>
 
 <template>
-  <article class="card h-100 movie-card">
+  <div class="card h-100 movie-card">
     <RouterLink
       :to="{ name: 'movie-details', params: { id: movie.id } }"
       class="text-decoration-none movie-link"
       :aria-label="`View details for ${movie.title}${releaseYear ? ` (${releaseYear})` : ''}`"
     >
       <img
-        :src="`https://image.tmdb.org/t/p/original/${movie.poster_path}`"
+        :src="`${Constants.API_URL_MOVIE_POSTER}/${movie.poster_path}`"
         :alt="`${movie.title} movie poster${releaseYear ? ` from ${releaseYear}` : ''}`"
         class="card-img-top"
         loading="lazy"
@@ -46,8 +51,16 @@ const releaseYear = computed(() => {
           <span v-if="releaseYear" class="text-muted fs-6">({{ releaseYear }})</span>
         </h3>
 
-        <div v-if="movie.vote_average" class="d-flex align-items-center mb-2">
-          <span class="badge bg-warning text-dark me-2" role="img" :aria-label="`Rating: ${movieRating} out of 10`">
+        <div class="d-flex align-items-center mb-2">
+          <span
+            :class="[
+              'badge',
+              'me-2',
+              movie.vote_average ? 'bg-warning text-dark' : 'bg-secondary text-white'
+            ]"
+            role="img"
+            :aria-label="`Rating: ${movieRating}${movie.vote_average ? ' out of 10' : ''}`"
+          >
             <i class="bi bi-star-fill me-1" aria-hidden="true"></i>
             {{ movieRating }}
           </span>
@@ -62,7 +75,7 @@ const releaseYear = computed(() => {
         </span>
       </div>
     </RouterLink>
-  </article>
+  </div>
 </template>
 
 <style scoped>
@@ -92,17 +105,10 @@ const releaseYear = computed(() => {
 }
 
 .card-img-top {
-  height: 400px;
   object-fit: cover;
 }
 
 .badge {
   font-size: 0.8rem;
-}
-
-@media (max-width: 768px) {
-  .card-img-top {
-    height: 300px;
-  }
 }
 </style>

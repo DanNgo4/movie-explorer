@@ -18,21 +18,25 @@ async function list() {
 
 async function retrieve(id) {
   store.currentMovie = await MovieService.retrieve(id);
+
   localStorage.setItem(Constants.LOCAL_STORAGE_CURRENT_MOVIE, JSON.stringify(store.currentMovie));
 }
 
-async function addReview(reviewData) {
-  await MovieService.addReview(reviewData);
-  retrieve(reviewData.movieId);
+async function addReview(model) {
+  await MovieService.addReview(model);
+
+  retrieve(model.movieId);
 }
 
-async function updateReview(reviewData) {
-  await MovieService.updateReview(reviewData);
-  retrieve(reviewData.movieId);
+async function updateReview(model) {
+  await MovieService.updateReview(model);
+
+  retrieve(model.movieId);
 }
 
 async function deleteReview(reviewId) {
   await MovieService.deleteReview(reviewId);
+
   retrieve(store.currentMovie.id);
 }
 

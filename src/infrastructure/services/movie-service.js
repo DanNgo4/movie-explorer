@@ -1,13 +1,11 @@
-const API_URL = `${import.meta.env.BASE_URL}/apis_movie_review.php`;
+import { Constants } from "@/constants";
 
 async function list() {
-  const url = "https://api.themoviedb.org/3/discover/movie?api_key=d83946a92b810bbfb1605d3282f61181&include_adult=false&with_genres=16";
-
   try {
     let result = [];
 
     for (let i = 1; i <= 10; i++) {
-      const response = await fetch(`${url}&page=${i}`);
+      const response = await fetch(`${Constants.API_URL_MOVIE_LIST}&page=${i}`);
       const movies = await response.json();
 
       result = [...result, ...movies.results];
@@ -21,13 +19,13 @@ async function list() {
 }
 
 async function retrieve(id) {
-  const url1 = `https://api.themoviedb.org/3/movie/${id}?api_key=d83946a92b810bbfb1605d3282f61181`;
-  const url2 = `${API_URL}/movieId/${id}`;
+  const movieByIdUrl   = `${Constants.API_URL_MOVIE}/${id}?api_key=${Constants.TMDB_API_KEY}`;
+  const movieReviewUrl = `${Constants.API_URL_MOVIE_REVIEW}/movieId/${id}`;
 
   try {
     const [response1, response2] = await Promise.all([
-      fetch(url1),
-      fetch(url2)
+      fetch(movieByIdUrl),
+      fetch(movieReviewUrl)
     ]);
 
     if (!response1.ok) {
@@ -37,49 +35,41 @@ async function retrieve(id) {
     const movie = await response1.json();
 
     let reviews = [];
+
     if (response2.ok) {
-      const responseText = await response2.text();
-      if (responseText && responseText.trim() !== "") {
-        try {
-          reviews = JSON.parse(responseText);
-        } catch (error) {
-          console.error("Failed to parse reviews response:", error);
-          reviews = [];
-        }
+      const response = await response2.json();
+
+      if (Array.isArray(response)) {
+        reviews = response;
       }
     } else {
-      console.error(`Reviews API failed with status: ${response2.status}`);
+      throw new Error(`Reviews API failed with status: ${response2.status}`);
     }
 
     if (reviews && Array.isArray(reviews) && reviews.length > 0) {
-      const userApiUrl = `${import.meta.env.BASE_URL}/apis_user.php`;
-
       const userIds = [...new Set(reviews.map(review => review.userId))];
 
       const userPromises = userIds.map(async (userId) => {
         try {
-          const userResponse = await fetch(`${userApiUrl}/id/${userId}`);
+          const userResponse = await fetch(`${Constants.API_URL_USER}/id/${userId}`);
           if (userResponse.ok) {
-            const responseText = await userResponse.text();
-            if (responseText && responseText.trim() !== "") {
-              const userData = JSON.parse(responseText);
-
-              return Array.isArray(userData)
-                ? userData[0]
-                : userData;
+            const response = await userResponse.json();
+            if (response.length > 0) {
+              return response[0];
             }
           }
+
           return {
-            id: userId,
-            firstName: "Unknown",
-            lastName: "User"
+            id        : userId,
+            firstName : "Unknown",
+            lastName  : "User"
           };
         } catch (error) {
           console.error(`Failed to fetch user ${userId}:`, error);
           return {
-            id: userId,
-            firstName: "Unknown",
-            lastName: "User"
+            id        : userId,
+            firstName : "Unknown",
+            lastName  : "User"
           };
         }
       });
@@ -97,15 +87,15 @@ async function retrieve(id) {
         const user = userMap[review.userId];
         if (user) {
           review.user = {
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName
+            id        : user.id,
+            firstName : user.firstName,
+            lastName  : user.lastName
           };
         } else {
           review.user = {
-            id: review.userId,
-            firstName: "Unknown",
-            lastName: "User"
+            id        : review.userId,
+            firstName : "Unknown",
+            lastName  : "User"
           };
         }
       });
@@ -119,34 +109,38 @@ async function retrieve(id) {
   }
 }
 
-async function addReview(reviewData) {
+async function addReview(model) {
   try {
-    const response = await fetch(`${API_URL}/`, {
+    await fetch(`${Constants.API_URL_MOVIE_REVIEW}/`, {
       method: "POST",
+
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(reviewData)
+
+      body: JSON.stringify(model)
     });
 
-    return await response.text();
+    return Promise.resolve();
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
   }
 }
 
-async function updateReview(reviewData) {
+async function updateReview(model) {
   try {
-    const response = await fetch(`${API_URL}/id/${reviewData.id}`, {
+    await fetch(`${Constants.API_URL_MOVIE_REVIEW}/id/${model.id}`, {
       method: "PUT",
+
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(reviewData)
+
+      body: JSON.stringify(model)
     });
 
-    return await response.text();
+    return Promise.resolve();
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
@@ -155,14 +149,14 @@ async function updateReview(reviewData) {
 
 async function deleteReview(id) {
   try {
-    const response = await fetch(`${API_URL}/id/${id}`, {
+    await fetch(`${Constants.API_URL_MOVIE_REVIEW}/id/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       }
     });
 
-    return await response.text();
+    return Promise.resolve();
   } catch (error) {
     console.error(error);
     return Promise.reject(error);

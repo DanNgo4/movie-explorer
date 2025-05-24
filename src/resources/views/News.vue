@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
+
 import Paginator from "primevue/paginator";
 
 const news = ref([]);
@@ -65,81 +66,106 @@ const truncateContent = (content, maxLength = 300) => {
 </script>
 
 <template>
-  <article class="news-container">
-    <section class="search-filters mb-4">
+  <article class="container-lg mx-auto p-4" style="max-width: 1200px;">
+    <section class="bg-light p-4 rounded mb-4">
       <form role="search" aria-label="Filter news articles">
         <fieldset>
           <legend class="h5 mb-3">Filter News Articles</legend>
 
-        <div class="row g-3">
-          <div class="col-md-3">
-            <label for="titleSearch" class="form-label">Title</label>
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label for="titleSearch" class="form-label">
+                Search by Title
+              </label>
 
-            <input id="titleSearch"
-                   type="text"
-                   v-model="searchTitle"
-                   placeholder="Search by title..."
-                   class="form-control"
-                   aria-describedby="titleSearch-help" />
-            <div id="titleSearch-help" class="form-text">Search for specific words in article titles</div>
-          </div>
+              <input id="titleSearch"
+                     type="text"
+                     v-model="searchTitle"
+                     placeholder="Search by title..."
+                     aria-describedby="titleSearch-help"
+                     class="form-control" />
 
-          <div class="col-md-3">
-            <label for="contentSearch" class="form-label">Content</label>
+              <div id="titleSearch-help" class="form-text">
+                Search for specific words in article titles
+              </div>
+            </div>
 
-            <input id="contentSearch"
-                   type="text"
-                   v-model="searchContent"
-                   placeholder="Search by content..."
-                   class="form-control"
-                   aria-describedby="contentSearch-help" />
-            <div id="contentSearch-help" class="form-text">Search within article content</div>
-          </div>
+            <div class="col-md-3">
+              <label for="contentSearch" class="form-label">
+                Search by Content
+              </label>
 
-          <div class="col-md-2">
-            <label for="categorySelect" class="form-label">Category</label>
+              <input id="contentSearch"
+                     type="text"
+                     v-model="searchContent"
+                     placeholder="Search by content..."
+                     aria-describedby="contentSearch-help"
+                     class="form-control" />
 
-            <select
-              id="categorySelect"
-              v-model="searchCategory"
-              class="form-select"
-              aria-describedby="categorySelect-help"
-            >
-              <option value="">All Categories</option>
+              <div id="contentSearch-help" class="form-text">
+                Search within article content
+              </div>
+            </div>
 
-              <option
-                v-for="category in categories"
-                :key="category"
-                :value="category"
+            <div class="col-md-2">
+              <label for="categorySelect" class="form-label">
+                Category
+              </label>
+
+              <select
+                id="categorySelect"
+                v-model="searchCategory"
+                class="form-select"
+                aria-describedby="categorySelect-help"
               >
-                {{ category }}
-              </option>
-            </select>
-            <div id="categorySelect-help" class="form-text">Filter by article category</div>
+                <option value="">All Categories</option>
+
+                <option
+                  v-for="category in categories"
+                  :key="category"
+                  :value="category"
+                >
+                  {{ category }}
+                </option>
+              </select>
+
+              <div id="categorySelect-help" class="form-text">
+                Filter by article category
+              </div>
+            </div>
+
+            <div class="col-md-2">
+              <label for="startDate" class="form-label">
+                Start Date
+              </label>
+
+              <input id="startDate"
+                     type="date"
+                     v-model="startDate"
+                     aria-describedby="startDate-help"
+                     class="form-control" />
+
+              <div id="startDate-help" class="form-text">
+                Articles from this date onwards
+              </div>
+            </div>
+
+            <div class="col-md-2">
+              <label for="endDate" class="form-label">
+                End Date
+              </label>
+
+              <input id="endDate"
+                     type="date"
+                     v-model="endDate"
+                     aria-describedby="endDate-help"
+                     class="form-control" />
+
+              <div id="endDate-help" class="form-text">
+                Articles up to this date
+              </div>
+            </div>
           </div>
-
-          <div class="col-md-2">
-            <label for="startDate" class="form-label">Start Date</label>
-
-            <input id="startDate"
-                   type="date"
-                   v-model="startDate"
-                   class="form-control"
-                   aria-describedby="startDate-help" />
-            <div id="startDate-help" class="form-text">Articles from this date onwards</div>
-          </div>
-
-          <div class="col-md-2">
-            <label for="endDate" class="form-label">End Date</label>
-
-            <input id="endDate"
-                   type="date"
-                   v-model="endDate"
-                   class="form-control"
-                   aria-describedby="endDate-help" />
-            <div id="endDate-help" class="form-text">Articles up to this date</div>
-          </div>
-        </div>
         </fieldset>
       </form>
     </section>
@@ -148,26 +174,34 @@ const truncateContent = (content, maxLength = 300) => {
       <div
         v-for="article in pagedNews"
         :key="article.title"
-        class="card mb-3"
+        class="card mb-3 transition-transform"
+        style="transition: transform 0.2s;"
       >
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-start">
-            <h5 class="card-title">{{ article.title }}</h5>
-            <span class="badge bg-primary">{{ article.category }}</span>
+            <h5 class="card-title">
+              {{ article.title }}
+            </h5>
+
+            <span class="badge bg-primary fs-6">
+              {{ article.category }}
+            </span>
           </div>
 
           <h6 class="card-subtitle mb-2 text-muted">
             {{ new Date(article.date).toLocaleDateString() }}
           </h6>
 
-          <p class="card-text">{{ truncateContent(article.content) }}</p>
+          <p class="card-text">
+            {{ truncateContent(article.content) }}
+          </p>
 
           <div class="mt-2">
             <a
               v-if="article.source"
               :href="article.source"
               target="_blank"
-              class="card-link"
+              class="text-decoration-underline text-primary"
             >
               Read full article
             </a>
@@ -188,38 +222,13 @@ const truncateContent = (content, maxLength = 300) => {
 </template>
 
 <style scoped>
-.news-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.search-filters {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-}
-
-.card {
-  transition: transform 0.2s;
-}
-
 .card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.badge {
-  font-size: 0.8rem;
-}
-
 .form-label {
   font-weight: 500;
   margin-bottom: 0.25rem;
-}
-
-.card-link {
-  text-decoration: underline;
-  color: blue;
 }
 </style>

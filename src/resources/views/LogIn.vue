@@ -2,7 +2,6 @@
 import { ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 
-import { store } from "@/store";
 import * as UserMutation from "@/infrastructure/mutations/user-mutation";
 
 const router = useRouter();
@@ -19,8 +18,8 @@ const handleSubmit = async () => {
     return;
   }
 
-  isLoading.value = true;
-  errorMessage.value = "";
+  isLoading.value      = true;
+  errorMessage.value   = "";
   successMessage.value = "";
 
   try {
@@ -72,32 +71,34 @@ const handleSubmit = async () => {
                 <legend class="visually-hidden">User Login Form</legend>
 
                 <div class="mb-3">
-                  <label for="email" class="form-label">Email Address</label>
-                  <input
-                    type="email"
-                    class="form-control"
-                    id="email"
-                    v-model="email"
-                    required
-                    placeholder="Enter your email"
-                    autocomplete="email"
-                    :disabled="isLoading"
-                  />
+                  <label for="email" class="form-label">
+                    Email Address
+                  </label>
+
+                  <input type="email"
+                         id="email"
+                         v-model="email"
+                         required
+                         placeholder="Enter your email"
+                         autocomplete="email"
+                         :disabled="isLoading"
+                         class="form-control" />
                 </div>
 
                 <div class="mb-4">
-                  <label for="password" class="form-label">Password</label>
+                  <label for="password" class="form-label">
+                    Password
+                  </label>
+
                   <div class="input-group">
-                    <input
-                      :type="showPassword ? 'text' : 'password'"
-                      class="form-control"
-                      id="password"
-                      v-model="password"
-                      required
-                      placeholder="Enter your password"
-                      autocomplete="current-password"
-                      :disabled="isLoading"
-                    />
+                    <input :type="showPassword ? 'text' : 'password'"
+                           id="password"
+                           v-model="password"
+                           required
+                           placeholder="Enter your password"
+                           autocomplete="current-password"
+                           :disabled="isLoading"
+                           class="form-control" />
 
                     <button
                       class="btn btn-outline-secondary"
@@ -112,13 +113,24 @@ const handleSubmit = async () => {
                   </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100 mb-3" :disabled="isLoading">
-                  <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <button
+                  type="submit"
+                  :disabled="isLoading"
+                  class="btn btn-primary w-100 mb-3"
+                >
+                  <span
+                    v-if="isLoading"
+                    role="status"
+                    aria-hidden="true"
+                    class="spinner-border spinner-border-sm me-2"
+                  ></span>
+
                   {{ isLoading ? 'Logging in...' : 'Log In' }}
                 </button>
 
                 <p class="text-center mb-0">
                   Don't have an account?
+
                   <RouterLink
                     to="/signup"
                     class="text-decoration-underline text-primary"

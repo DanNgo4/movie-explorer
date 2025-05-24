@@ -57,16 +57,20 @@ const logout = () => {
         :key="page.route"
         :to="page.route"
         :class="[
-          'nav-link',
           'text-decoration-none',
           'px-3',
           'py-2',
           'rounded',
+          'transition-all',
           {
-            'active-page': route.path === page.route ||
-                          (page.route === '/' && route.path === '/'),
-            'text-primary': route.path === page.route ||
-                           (page.route === '/' && route.path === '/')
+            'bg-primary text-white fw-semibold': route.path === page.route
+                                             || (page.route === '/' && route.path === '/'),
+
+            'text-primary': !(route.path === page.route
+                          || (page.route === '/' && route.path === '/')),
+
+            'hover-bg-primary-subtle': !(route.path === page.route
+                                     || (page.route === '/' && route.path === '/'))
           }
         ]"
       >
@@ -75,10 +79,16 @@ const logout = () => {
     </nav>
 
     <section class="d-none d-lg-flex gap-3 align-items-center">
-      <div v-if="store.currentUser" class="d-flex align-items-center gap-3">
+      <div
+        v-if="store.currentUser"
+        class="d-flex align-items-center gap-3"
+      >
         <div class="d-flex align-items-center gap-2">
           <i class="bi bi-person-circle fs-5"></i>
-          <span>Hi {{ store.currentUser.firstName }}</span>
+
+          <span>
+            Hi {{ store.currentUser.firstName }}
+          </span>
         </div>
 
         <button
@@ -97,7 +107,8 @@ const logout = () => {
           <template #item="{ item }">
             <a
               @click="item.command"
-              class="dropdown-item d-flex align-items-center gap-2"
+              class="dropdown-item d-flex align-items-center gap-2 px-3 py-2"
+              style="cursor: pointer;"
             >
               <i :class="item.icon"></i> {{ item.label }}
             </a>
@@ -109,14 +120,15 @@ const logout = () => {
         <RouterLink
           :to="'/login'"
           :class="[
-            'nav-link',
             'text-decoration-none',
             'px-3',
             'py-2',
             'rounded',
+            'transition-all',
             {
-              'active-page': route.path === '/login',
-              'text-primary': route.path === '/login'
+              'bg-primary text-white fw-semibold': route.path === '/login',
+              'text-primary': route.path !== '/login',
+              'hover-bg-primary-subtle': route.path !== '/login'
             }
           ]"
         >
@@ -126,16 +138,19 @@ const logout = () => {
         <RouterLink
           :to="'/signup'"
           :class="[
-            'nav-link',
             'text-decoration-none',
             'px-3',
             'py-2',
             'rounded',
             'border',
             'border-dark',
+            'transition-all',
             {
-              'active-page': route.path === '/signup',
-              'text-primary': route.path === '/signup'
+              'bg-primary text-white fw-semibold': route.path === '/signup',
+
+              'text-primary': route.path !== '/signup',
+
+              'hover-bg-primary-subtle': route.path !== '/signup'
             }
           ]"
         >
@@ -179,10 +194,10 @@ const logout = () => {
               :href="`${baseUrl}/#${item.route}`"
               @click="navigate"
               :class="[
-                'mobile-nav-link',
+                'text-white text-decoration-none px-4 py-3 d-flex align-items-center mobile-transition',
                 {
-                  'active-mobile-page': route.path === item.route ||
-                                       (item.route === '/' && route.path === '/')
+                  'mobile-active-page fw-semibold': route.path === item.route
+                                                || (item.route === '/' && route.path === '/')
                 }
               ]"
             >
@@ -193,7 +208,8 @@ const logout = () => {
           <a
             v-else-if="item.command"
             @click="item.command"
-            class="dropdown-item d-flex align-items-center gap-2"
+            class="dropdown-item d-flex align-items-center gap-2 px-3 py-2 text-white"
+            style="cursor: pointer;"
           >
             <i :class="item.icon"></i>
             {{ item.label }}
@@ -205,63 +221,31 @@ const logout = () => {
 </template>
 
 <style scoped>
-.active-page {
-  background-color: var(--bs-primary) !important;
-  color: white !important;
-  font-weight: 600;
-}
-
-.nav-link {
+.transition-all {
   transition: all 0.3s ease;
 }
 
-.nav-link:hover:not(.active-page) {
-  background-color: rgba(var(--bs-primary-rgb), 0.1);
-  color: var(--bs-primary);
-}
-
-.custom-tiered-menu a {
-  color: white;
-  padding: 0.75rem 1.5rem;
-  display: flex;
-  align-items: center;
-}
-
-.custom-tiered-menu a:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.mobile-nav-link {
-  color: white;
-  padding: 0.75rem 1.5rem;
-  display: flex;
-  align-items: center;
-  text-decoration: none;
+.mobile-transition {
   transition: all 0.3s ease;
 }
 
-.active-mobile-page {
+.hover-bg-primary-subtle:hover {
+  background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+  color: var(--bs-primary) !important;
+}
+
+.mobile-active-page {
   background-color: rgba(255, 255, 255, 0.9) !important;
   color: black !important;
-  font-weight: 600;
   border-left: 4px solid white;
 }
 
-.mobile-nav-link:hover:not(.active-mobile-page) {
-  background-color: rgba(255, 255, 255, 0.9);
-  color: black;
-}
-
-.custom-user-menu .dropdown-item {
-  padding: 0.5rem 1rem;
-  cursor: pointer;
+.custom-tiered-menu a:hover:not(.mobile-active-page) {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  color: black !important;
 }
 
 .custom-user-menu .dropdown-item:hover {
   background-color: rgba(0, 0, 0, 0.05);
-}
-
-.cursor-pointer {
-  cursor: pointer;
 }
 </style>

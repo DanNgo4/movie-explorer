@@ -1,24 +1,27 @@
 <script setup>
 import { RouterLink } from "vue-router";
+
+import { Constants } from "@/constants";
 </script>
 
 <template>
-  <article class="home-container">
-    <section class="hero-section mb-3 text-center">
+  <article class="container-xl px-4 py-5">
+    <section class="py-5 px-3 mb-4 text-center bg-light rounded">
       <h1 class="display-4 mb-3">Welcome to Movie Explorer</h1>
 
-      <p class="lead">
+      <p class="lead text-muted">
         Discover, explore, and stay updated with the latest in cinema
       </p>
     </section>
 
     <section class="row g-4 justify-content-center">
       <div class="col-md-5">
-        <div class="card h-100">
+        <div class="card h-100 border-0 shadow-sm hover-card">
           <RouterLink to="/movies">
-            <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+            <img :src="Constants.API_URL_MOVIE_IMAGE1"
                   alt="Cinema entrance"
-                  class="card-img-top" />
+                  class="card-img-top object-fit-cover"
+                  style="height: 250px;" />
 
             <div class="card-body">
               <h5 class="card-title">Explore Movies</h5>
@@ -32,11 +35,12 @@ import { RouterLink } from "vue-router";
       </div>
 
       <div class="col-md-5">
-        <div class="card h-100">
+        <div class="card h-100 border-0 shadow-sm hover-card">
           <RouterLink to="/news">
-            <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+            <img :src="Constants.API_URL_MOVIE_IMAGE2"
                   alt="Movie theater interior"
-                  class="card-img-top" />
+                  class="card-img-top object-fit-cover"
+                  style="height: 250px;" />
 
           <div class="card-body">
             <h5 class="card-title">Stay Updated</h5>
@@ -53,40 +57,16 @@ import { RouterLink } from "vue-router";
 </template>
 
 <style scoped>
-.home-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.hero-section {
-  padding: 3rem 1rem;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-}
-
-.card {
+.hover-card {
   transition: transform 0.2s;
-  border: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.card:hover {
+.hover-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2) !important;
 }
 
 .card a:hover {
   background-color: transparent !important;
-}
-
-.card-img-top {
-  height: 250px;
-  object-fit: cover;
-}
-
-.lead {
-  color: #6c757d;
 }
 </style>

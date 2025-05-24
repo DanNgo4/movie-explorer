@@ -128,14 +128,14 @@ const handleSubmit = async () => {
     successMessage.value = "";
 
     try {
-      const userData = {
-        firstName: form.value.firstName,
-        lastName: form.value.lastName,
-        email: form.value.email,
-        password: form.value.password,
+      const model = {
+        firstName : form.value.firstName,
+        lastName  : form.value.lastName,
+        email     : form.value.email,
+        password  : form.value.password,
       };
 
-      await UserMutation.signup(userData);
+      await UserMutation.signup(model);
 
       console.log("Signup and login successful:", store.currentUser);
       successMessage.value = "Account created successfully! Redirecting...";

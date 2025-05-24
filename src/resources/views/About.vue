@@ -3,6 +3,8 @@ import { ref, computed, onMounted } from "vue";
 
 import { store } from "@/store";
 
+import { Constants } from "@/constants";
+
 const firstName = ref("");
 const lastName = ref("");
 const selectedImage = ref("mountain");
@@ -23,14 +25,14 @@ const welcomeMessage = computed(() => {
 });
 
 const images = {
-  mountain: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-  ocean: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+  mountain : Constants.API_URL_MOUNTAIN_IMAGE,
+  ocean    : Constants.API_URL_OCEAN_IMAGE
 };
 </script>
 
 <template>
-  <article class="about-container">
-    <section class="about-section mb-5">
+  <article class="container-xl px-4 py-5">
+    <section class="mb-5">
       <h1 class="display-5 mb-4">About Movie Explorer</h1>
 
       <p class="lead mb-4">
@@ -38,7 +40,7 @@ const images = {
       </p>
     </section>
 
-    <section class="user-input-section mb-5">
+    <section class="mb-5">
       <h2 class="h4 mb-3">Introduce Yourself</h2>
 
       <div class="row g-3 mb-3">
@@ -63,12 +65,12 @@ const images = {
         </div>
       </div>
 
-      <div v-if="welcomeMessage" class="welcome-message alert alert-success">
+      <div v-if="welcomeMessage" class="alert alert-success fs-5">
         {{ welcomeMessage }}
       </div>
     </section>
 
-    <section class="image-selection-section">
+    <section>
       <h2 class="h4 mb-3">Select Your Preferred View</h2>
 
       <div class="mb-4">
@@ -93,48 +95,30 @@ const images = {
         </div>
       </div>
 
-      <div class="selected-image-container">
+      <div class="rounded overflow-hidden shadow-sm">
         <img :src="images[selectedImage]"
              :alt="selectedImage === 'mountain'
                ? 'Mountain landscape'
                : 'Ocean landscape'
              "
-             class="selected-image" />
+             class="w-100 object-fit-cover hover-scale"
+             style="max-height: 400px;" />
       </div>
     </section>
   </article>
 </template>
 
 <style scoped>
-.about-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.welcome-message {
-  font-size: 1.2rem;
-}
-
-.selected-image-container {
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.selected-image {
-  width: 100%;
-  max-height: 400px;
-  object-fit: cover;
+.hover-scale {
   transition: transform 0.3s ease;
 }
 
-.selected-image:hover {
+.hover-scale:hover {
   transform: scale(1.02);
 }
 
 .form-check-input:checked {
-  background-color: #0d6efd;
-  border-color: #0d6efd;
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
 }
 </style>
