@@ -1,108 +1,155 @@
-
 <script setup>
-import { ref, computed } from 'vue';
-import { RouterLink } from 'vue-router';
+import { ref, computed } from "vue";
+import { RouterLink, useRouter } from "vue-router";
+import * as UserMutation from "@/infrastructure/mutations/user-mutation";
+
+const router = useRouter();
 
 const form = ref({
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  confirmPassword: ''
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
 });
 
 const errors = ref({
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  confirmPassword: ''
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
 });
 
 const showPassword = ref(false);
+const isLoading = ref(false);
+const successMessage = ref("");
+const errorMessage = ref("");
 
-// Validation rules
 const validateName = (name, field) => {
   if (!name) {
-    errors.value[field] = 'This field is required';
+    errors.value[field] = "This field is required";
     return false;
   }
   if (name.length < 2) {
-    errors.value[field] = 'Must be at least 2 characters';
+    errors.value[field] = "Must be at least 2 characters";
     return false;
   }
-  errors.value[field] = '';
+  errors.value[field] = "";
   return true;
 };
 
 const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email) {
-    errors.value.email = 'Email is required';
+    errors.value.email = "Email is required";
     return false;
   }
   if (!emailRegex.test(email)) {
-    errors.value.email = 'Please enter a valid email';
+    errors.value.email = "Please enter a valid email";
     return false;
   }
-  errors.value.email = '';
+  errors.value.email = "";
   return true;
 };
 
 const validatePassword = (password) => {
   if (!password) {
-    errors.value.password = 'Password is required';
+    errors.value.password = "Password is required";
     return false;
   }
-  if (password.length < 8) {
-    errors.value.password = 'Password must be at least 8 characters';
+  if (password.length < 6) {
+    errors.value.password = "Password must be at least 6 characters";
     return false;
   }
   if (!/[A-Z]/.test(password)) {
-    errors.value.password = 'Password must contain at least one uppercase letter';
+    errors.value.password = "Password must contain at least one uppercase letter";
     return false;
   }
   if (!/[a-z]/.test(password)) {
-    errors.value.password = 'Password must contain at least one lowercase letter';
+    errors.value.password = "Password must contain at least one lowercase letter";
     return false;
   }
   if (!/[0-9]/.test(password)) {
-    errors.value.password = 'Password must contain at least one number';
+    errors.value.password = "Password must contain at least one number";
     return false;
   }
-  errors.value.password = '';
+  errors.value.password = "";
   return true;
 };
 
 const validateConfirmPassword = () => {
   if (!form.value.confirmPassword) {
-    errors.value.confirmPassword = 'Please confirm your password';
+    errors.value.confirmPassword = "Please confirm your password";
     return false;
   }
   if (form.value.password !== form.value.confirmPassword) {
-    errors.value.confirmPassword = 'Passwords do not match';
+    errors.value.confirmPassword = "Passwords do not match";
     return false;
   }
-  errors.value.confirmPassword = '';
+  errors.value.confirmPassword = "";
   return true;
 };
 
 const isValid = computed(() => {
-  return !Object.values(errors.value).some(error => error !== '') &&
-         Object.values(form.value).every(value => value !== '');
+  return !Object.values(errors.value).some(error => error !== "") &&
+          Object.values(form.value).every(value => value !== "");
 });
 
-const handleSubmit = () => {
-  const isFirstNameValid = validateName(form.value.firstName, 'firstName');
-  const isLastNameValid = validateName(form.value.lastName, 'lastName');
+const handleSubmit = async () => {
+  const isFirstNameValid = validateName(form.value.firstName, "firstName");
+  const isLastNameValid = validateName(form.value.lastName, "lastName");
   const isEmailValid = validateEmail(form.value.email);
   const isPasswordValid = validatePassword(form.value.password);
   const isConfirmPasswordValid = validateConfirmPassword();
 
   if (isFirstNameValid && isLastNameValid && isEmailValid &&
       isPasswordValid && isConfirmPasswordValid) {
-    // TODO: Implement signup logic
-    console.log('Form submitted:', form.value);
+
+    isLoading.value = true;
+    errorMessage.value = "";
+    successMessage.value = "";
+
+    try {
+      // Prepare user data for signup
+      const userData = {
+        firstName: form.value.firstName,
+        lastName: form.value.lastName,
+        email: form.value.email,
+        password: form.value.password,
+        // Add any other fields your API expects
+      };
+
+      const result = await UserMutation.signup(userData);
+
+      if (result.success) {
+        if (result.user) {
+          // User was automatically logged in after signup
+          console.log('Signup and login successful:', result.user);
+          successMessage.value = "Account created successfully! Redirecting...";
+
+          // Redirect to home page after a short delay
+          setTimeout(() => {
+            router.push('/');
+          }, 1500);
+        } else {
+          // Account created but needs to login manually
+          successMessage.value = result.message || "Account created successfully! Please log in.";
+
+          // Redirect to login page after a short delay
+          setTimeout(() => {
+            router.push('/login');
+          }, 2000);
+        }
+      } else {
+        errorMessage.value = result.error || "Failed to create account. Please try again.";
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      errorMessage.value = "An unexpected error occurred. Please try again.";
+    } finally {
+      isLoading.value = false;
+    }
   }
 };
 </script>
@@ -114,6 +161,16 @@ const handleSubmit = () => {
         <div class="card border-0 shadow-sm">
           <div class="card-body p-4 p-md-5">
             <h2 class="text-center mb-4">Create Account</h2>
+
+            <!-- Success message display -->
+            <div v-if="successMessage" class="alert alert-success" role="alert">
+              {{ successMessage }}
+            </div>
+
+            <!-- Error message display -->
+            <div v-if="errorMessage" class="alert alert-danger" role="alert">
+              {{ errorMessage }}
+            </div>
 
             <form @submit.prevent="handleSubmit" novalidate>
               <div class="row">
@@ -131,6 +188,7 @@ const handleSubmit = () => {
                     @blur="validateName(form.firstName, 'firstName')"
                     required
                     placeholder="Enter your first name"
+                    :disabled="isLoading"
                   />
 
                   <div class="invalid-feedback">
@@ -149,6 +207,7 @@ const handleSubmit = () => {
                     @blur="validateName(form.lastName, 'lastName')"
                     required
                     placeholder="Enter your last name"
+                    :disabled="isLoading"
                   />
                   <div class="invalid-feedback">{{ errors.lastName }}</div>
                 </div>
@@ -169,6 +228,7 @@ const handleSubmit = () => {
                   required
                   placeholder="Enter your email"
                   autocomplete="email"
+                  :disabled="isLoading"
                 />
 
                 <div class="invalid-feedback">
@@ -189,11 +249,13 @@ const handleSubmit = () => {
                     required
                     placeholder="Enter your password"
                     autocomplete="new-password"
+                    :disabled="isLoading"
                   />
                   <button
                     class="btn btn-outline-secondary"
                     type="button"
                     @click="showPassword = !showPassword"
+                    :disabled="isLoading"
                   >
                     <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
                   </button>
@@ -213,6 +275,7 @@ const handleSubmit = () => {
                   required
                   placeholder="Confirm your password"
                   autocomplete="new-password"
+                  :disabled="isLoading"
                 />
                 <div class="invalid-feedback">{{ errors.confirmPassword }}</div>
               </div>
@@ -220,9 +283,10 @@ const handleSubmit = () => {
               <button
                 type="submit"
                 class="btn btn-primary w-100 mb-3"
-                :disabled="!isValid"
+                :disabled="!isValid || isLoading"
               >
-                Sign Up
+                <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                {{ isLoading ? 'Creating Account...' : 'Sign Up' }}
               </button>
 
               <p class="text-center mb-0">

@@ -12,12 +12,12 @@ $input = json_decode(file_get_contents('php://input'),true);
 
 // connect to the mysql database, provide the appropriate credentials
 //$conn = mysqli_connect('localhost', 'root', '', 'your-database');
-$conn = mysqli_connect('feenix-mariadb.swin.edu.au', 's1234567', 'your-database-password', 's1234567_db');
+$conn = mysqli_connect('feenix-mariadb.swin.edu.au', 's104186810', '261004', 's104186810_db');
 
 mysqli_set_charset($conn,'utf8');
 
 // initialise the table name accordingly
-$table = "idd_person";
+$table = "user";
 
 // retrieve the search key field name and value from the path
 $fld = preg_replace('/[^a-z0-9_]+/i','',array_shift($request));
