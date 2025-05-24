@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import { RouterLink, useRouter } from "vue-router";
+import { RouterLink, useRouter, useRoute } from "vue-router";
 
 import { TieredMenu } from "primevue";
 
@@ -10,6 +10,7 @@ import * as UserMutation from "@/infrastructure/mutations/user-mutation";
 
 const baseUrl = import.meta.env.BASE_URL;
 const router = useRouter();
+const route = useRoute();
 
 const menuRef = ref(null);
 const userMenuRef = ref(null);
@@ -19,6 +20,11 @@ const pages = [
   { label: "Movies", route: "/movies" },
   { label: "News",   route: "/news"   },
   { label: "About",  route: "/about"  }
+];
+
+const authPages = [
+  { label: "Log In",  route: "/login"  },
+  { label: "Sign Up", route: "/signup" }
 ];
 
 const userMenuItems = [
@@ -50,6 +56,19 @@ const logout = () => {
         v-for="page in pages"
         :key="page.route"
         :to="page.route"
+        :class="[
+          'nav-link',
+          'text-decoration-none',
+          'px-3',
+          'py-2',
+          'rounded',
+          {
+            'active-page': route.path === page.route ||
+                          (page.route === '/' && route.path === '/'),
+            'text-primary': route.path === page.route ||
+                           (page.route === '/' && route.path === '/')
+          }
+        ]"
       >
         {{ page.label }}
       </RouterLink>
@@ -87,11 +106,39 @@ const logout = () => {
       </div>
 
       <template v-else>
-        <RouterLink :to="'/login'">
+        <RouterLink
+          :to="'/login'"
+          :class="[
+            'nav-link',
+            'text-decoration-none',
+            'px-3',
+            'py-2',
+            'rounded',
+            {
+              'active-page': route.path === '/login',
+              'text-primary': route.path === '/login'
+            }
+          ]"
+        >
           Log In
         </RouterLink>
 
-        <RouterLink :to="'/signup'" class="border border-black px-2 py-1 rounded">
+        <RouterLink
+          :to="'/signup'"
+          :class="[
+            'nav-link',
+            'text-decoration-none',
+            'px-3',
+            'py-2',
+            'rounded',
+            'border',
+            'border-dark',
+            {
+              'active-page': route.path === '/signup',
+              'text-primary': route.path === '/signup'
+            }
+          ]"
+        >
           Sign Up
         </RouterLink>
       </template>
@@ -114,7 +161,7 @@ const logout = () => {
       </button>
 
       <TieredMenu
-        :model="store.currentUser ? [...pages, ...userMenuItems] : pages"
+        :model="store.currentUser ? [...pages, ...userMenuItems] : [...pages, ...authPages]"
         popup
         ref="menuRef"
         class="custom-tiered-menu"
@@ -126,8 +173,19 @@ const logout = () => {
             v-if="item.route"
             :to="item.route"
             custom
+            v-slot="{ navigate }"
           >
-            <a :href="`${baseUrl}/#${item.route}`">
+            <a
+              :href="`${baseUrl}/#${item.route}`"
+              @click="navigate"
+              :class="[
+                'mobile-nav-link',
+                {
+                  'active-mobile-page': route.path === item.route ||
+                                       (item.route === '/' && route.path === '/')
+                }
+              ]"
+            >
               {{ item.label }}
             </a>
           </RouterLink>
@@ -147,6 +205,21 @@ const logout = () => {
 </template>
 
 <style scoped>
+.active-page {
+  background-color: var(--bs-primary) !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.nav-link {
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover:not(.active-page) {
+  background-color: rgba(var(--bs-primary-rgb), 0.1);
+  color: var(--bs-primary);
+}
+
 .custom-tiered-menu a {
   color: white;
   padding: 0.75rem 1.5rem;
@@ -156,6 +229,27 @@ const logout = () => {
 
 .custom-tiered-menu a:hover {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-nav-link {
+  color: white;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.active-mobile-page {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  color: black !important;
+  font-weight: 600;
+  border-left: 4px solid white;
+}
+
+.mobile-nav-link:hover:not(.active-mobile-page) {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: black;
 }
 
 .custom-user-menu .dropdown-item {
