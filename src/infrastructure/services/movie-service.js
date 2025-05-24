@@ -8,7 +8,7 @@ async function list() {
       const response = await fetch(`${Constants.API_URL_MOVIE_LIST}&page=${i}`);
       const movies = await response.json();
 
-      result = [...result, ...movies.results];
+      result.push(...movies.results);
     }
 
     return result;
@@ -49,21 +49,12 @@ async function retrieve(id) {
     if (reviews && Array.isArray(reviews) && reviews.length > 0) {
       const userIds = [...new Set(reviews.map(review => review.userId))];
 
-      const userPromises = userIds.map(async (userId) => {
+      const getUsersHaveReview = userIds.map(async (userId) => {
         try {
           const userResponse = await fetch(`${Constants.API_URL_USER}/id/${userId}`);
-          if (userResponse.ok) {
-            const response = await userResponse.json();
-            if (response.length > 0) {
-              return response[0];
-            }
-          }
+          const response = await userResponse.json();
 
-          return {
-            id        : userId,
-            firstName : "Unknown",
-            lastName  : "User"
-          };
+          return response[0];
         } catch (error) {
           console.error(`Failed to fetch user ${userId}:`, error);
           return {
@@ -74,7 +65,7 @@ async function retrieve(id) {
         }
       });
 
-      const users = await Promise.all(userPromises);
+      const users = await Promise.all(getUsersHaveReview);
 
       const userMap = {};
       users.forEach(user => {
@@ -85,19 +76,11 @@ async function retrieve(id) {
 
       reviews.forEach(review => {
         const user = userMap[review.userId];
-        if (user) {
-          review.user = {
-            id        : user.id,
-            firstName : user.firstName,
-            lastName  : user.lastName
-          };
-        } else {
-          review.user = {
-            id        : review.userId,
-            firstName : "Unknown",
-            lastName  : "User"
-          };
-        }
+        review.user = {
+          id        : user.id,
+          firstName : user.firstName,
+          lastName  : user.lastName
+        };
       });
     }
 
@@ -151,6 +134,7 @@ async function deleteReview(id) {
   try {
     await fetch(`${Constants.API_URL_MOVIE_REVIEW}/id/${id}`, {
       method: "DELETE",
+
       headers: {
         "Content-Type": "application/json",
       }

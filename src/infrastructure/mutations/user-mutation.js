@@ -1,7 +1,5 @@
 import { store } from "@/store";
 
-import { Constants } from "@/constants";
-
 import * as UserService from "../services/user-service";
 
 async function signup(model) {
@@ -15,8 +13,6 @@ async function signup(model) {
   const authResult = await UserService.authenticate(model.email, model.password);
 
   store.currentUser = authResult.user;
-
-  localStorage.setItem(Constants.LOCAL_STORAGE_CURRENT_USER, JSON.stringify(store.currentUser));
 }
 
 async function login(email, password) {
@@ -24,8 +20,6 @@ async function login(email, password) {
 
   if (authResult.success) {
     store.currentUser = authResult.user;
-
-    localStorage.setItem(Constants.LOCAL_STORAGE_CURRENT_USER, JSON.stringify(store.currentUser));
 
     return { success: true, user: authResult.user };
   } else {
@@ -35,8 +29,6 @@ async function login(email, password) {
 
 async function logout() {
   store.currentUser = null;
-
-  localStorage.removeItem(Constants.LOCAL_STORAGE_CURRENT_USER);
 }
 
 export {

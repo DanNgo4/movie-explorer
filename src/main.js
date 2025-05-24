@@ -8,9 +8,6 @@ import router from "./router";
 
 import PrimeVue from "primevue/config";
 import Aura from '@primeuix/themes/aura';
-/* import "@primevue/themes/saga-blue/theme.css";
-import "primevue/resources/primevue.css";
-import "primeicons/primeicons.css"; */
 
 import "@fortawesome/fontawesome-free/css/all.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
