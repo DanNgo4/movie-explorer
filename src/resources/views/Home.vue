@@ -1,4 +1,5 @@
 <script setup>
+import { RouterLink } from "vue-router";
 </script>
 
 <template>
@@ -14,33 +15,37 @@
     <section class="row g-4 justify-content-center">
       <div class="col-md-5">
         <div class="card h-100">
-          <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-               alt="Cinema entrance"
-               class="card-img-top" />
+          <RouterLink to="/movies">
+            <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                  alt="Cinema entrance"
+                  class="card-img-top" />
 
-          <div class="card-body">
-            <h5 class="card-title">Explore Movies</h5>
+            <div class="card-body">
+              <h5 class="card-title">Explore Movies</h5>
 
-            <p class="card-text">
-              Browse through our extensive collection of movies, from classic films to the latest releases.
-            </p>
-          </div>
+              <p class="card-text">
+                Browse through our extensive collection of movies, from classic films to the latest releases.
+              </p>
+            </div>
+          </RouterLink>
         </div>
       </div>
 
       <div class="col-md-5">
         <div class="card h-100">
-          <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-               alt="Movie theater interior"
-               class="card-img-top" />
+          <RouterLink to="/news">
+            <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                  alt="Movie theater interior"
+                  class="card-img-top" />
 
           <div class="card-body">
             <h5 class="card-title">Stay Updated</h5>
 
             <p class="card-text">
               Get the latest news and updates about upcoming releases, reviews, and cinema events.
-            </p>
-          </div>
+              </p>
+            </div>
+          </RouterLink>
         </div>
       </div>
     </section>
@@ -70,6 +75,10 @@
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card a:hover {
+  background-color: transparent !important;
 }
 
 .card-img-top {

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, defineProps, computed } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, RouterLink } from "vue-router";
 
 import { store } from "@/store";
 
@@ -18,6 +18,14 @@ const props = defineProps({
 const router = useRouter();
 const isLoading = ref(true);
 const movieId = Number(props.id);
+
+const reviewForm = ref({
+  review: "",
+  rating: 10
+});
+const isSubmittingReview = ref(false);
+const reviewError = ref("");
+const reviewSuccess = ref("");
 
 onMounted(async () => {
   try {
@@ -37,6 +45,76 @@ const formatDate = (dateString) => {
     month: "long",
     day: "numeric"
   });
+};
+
+const getDisplayName = (review) => {
+  if (isCurrentUserReview(review)) {
+    return "You";
+  }
+  return getUserName(review);
+};
+
+const hasUserReviewed = computed(() => {
+  if (!store.currentUser || !store.currentMovie.reviews) {
+    return false;
+  }
+  return store.currentMovie.reviews.some(review => review.user_id === store.currentUser.id);
+});
+
+const submitReview = async () => {
+  if (!store.currentUser) {
+    reviewError.value = "Please log in to submit a review.";
+    return;
+  }
+
+  if (hasUserReviewed.value) {
+    reviewError.value = "You have already reviewed this movie.";
+    return;
+  }
+
+  if (!reviewForm.value.review.trim()) {
+    reviewError.value = "Please write a review.";
+    return;
+  }
+
+  isSubmittingReview.value = true;
+  reviewError.value = "";
+  reviewSuccess.value = "";
+
+  try {
+    const reviewData = {
+      movie_id: movieId,
+      user_id: store.currentUser.id,
+      review: reviewForm.value.review.trim(),
+      rating: reviewForm.value.rating
+    };
+
+    await MovieMutations.addReview(reviewData);
+
+    reviewSuccess.value = "Review submitted successfully!";
+    reviewForm.value.review = "";
+    reviewForm.value.rating = 10;
+
+    setTimeout(() => {
+      reviewSuccess.value = "";
+    }, 3000);
+  } catch (error) {
+    console.error("Failed to submit review:", error);
+    reviewError.value = "Failed to submit review. Please try again.";
+  } finally {
+    isSubmittingReview.value = false;
+  }
+};
+
+const getUserName = (review) => {
+  if (review.user && review.user.firstName && review.user.lastName) {
+    return `${review.user.firstName} ${review.user.lastName}`;
+  }
+  return `User ${review.user_id}`;
+};
+
+const isCurrentUserReview = (review) => {
+  return store.currentUser && review.user_id === store.currentUser.id;
 };
 </script>
 
@@ -95,6 +173,129 @@ const formatDate = (dateString) => {
                 {{ store.currentMovie.overview }}
               </p>
             </section>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mt-4">
+        <div class="card-header">
+          <h2 class="h4 mb-0 text-primary">Reviews</h2>
+        </div>
+
+        <div class="card-body">
+          <div v-if="store.currentUser" class="mb-4">
+            <div v-if="hasUserReviewed" class="alert alert-info">
+              <i class="bi bi-check-circle me-2"></i>
+              You have already reviewed this movie. Thank you for your feedback!
+            </div>
+
+            <div v-else>
+              <h5 class="mb-3">Write a Review</h5>
+
+              <div v-if="reviewSuccess" class="alert alert-success" role="alert">
+                {{ reviewSuccess }}
+              </div>
+
+              <div v-if="reviewError" class="alert alert-danger" role="alert">
+                {{ reviewError }}
+              </div>
+
+              <form @submit.prevent="submitReview">
+                <div class="mb-3">
+                  <label for="rating" class="form-label">Rating (0-10)</label>
+                  <input
+                    type="number"
+                    id="rating"
+                    v-model.number="reviewForm.rating"
+                    class="form-control"
+                    min="0"
+                    max="10"
+                    step="1"
+                    :disabled="isSubmittingReview"
+                    required
+                  />
+                  <div class="form-text">Rate this movie from 0 (terrible) to 10 (excellent)</div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="review" class="form-label">Review</label>
+                  <textarea
+                    id="review"
+                    v-model="reviewForm.review"
+                    class="form-control"
+                    rows="4"
+                    placeholder="Write your review here..."
+                    :disabled="isSubmittingReview"
+                    required
+                  ></textarea>
+                </div>
+
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  :disabled="isSubmittingReview || !reviewForm.review.trim()"
+                >
+                  <span v-if="isSubmittingReview" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  {{ isSubmittingReview ? 'Submitting...' : 'Submit Review' }}
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div v-else class="alert alert-info mb-4">
+            <i class="bi bi-info-circle me-2"></i>
+            Please <RouterLink to="/login" class="alert-link">log in</RouterLink> to write a review.
+          </div>
+
+          <div v-if="store.currentMovie.reviews && store.currentMovie.reviews.length > 0">
+            <h5 class="mb-3">All Reviews ({{ store.currentMovie.reviews.length }})</h5>
+
+            <div
+              v-for="review in store.currentMovie.reviews"
+              :key="review.id"
+              class="border rounded p-3 mb-3"
+              :class="{ 'border-primary bg-primary bg-opacity-10': isCurrentUserReview(review) }"
+            >
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <strong>{{ getDisplayName(review) }}</strong>
+                  <span v-if="isCurrentUserReview(review)" class="badge bg-primary ms-2">Your Review</span>
+                  <div class="mt-1">
+                    <span
+                      class="badge fs-6 px-2 py-1"
+                      :class="{
+                        'bg-danger': review.rating <= 3,
+                        'bg-warning': review.rating > 3 && review.rating <= 6,
+                        'bg-success': review.rating > 6
+                      }"
+                    >
+                      {{ review.rating }}/10
+                    </span>
+                    <div class="progress mt-1" style="height: 6px; width: 100px;">
+                      <div
+                        class="progress-bar"
+                        :class="{
+                          'bg-danger': review.rating <= 3,
+                          'bg-warning': review.rating > 3 && review.rating <= 6,
+                          'bg-success': review.rating > 6
+                        }"
+                        :style="{ width: (review.rating * 10) + '%' }"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <p class="mb-0">{{ review.review }}</p>
+            </div>
+          </div>
+
+          <div v-else class="text-center py-4">
+            <i class="bi bi-chat-quote text-muted" style="font-size: 3rem;"></i>
+
+            <p class="text-muted mt-2">
+              No reviews yet. Be the first to review this movie!
+            </p>
           </div>
         </div>
       </div>

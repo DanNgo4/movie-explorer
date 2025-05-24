@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `user`;
 DROP TABLE IF EXISTS `movie_review`;
+DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE IF NOT EXISTS `user` (
   `id`        INT           AUTO_INCREMENT PRIMARY KEY,
@@ -10,10 +10,10 @@ CREATE TABLE IF NOT EXISTS `user` (
 );
 
 CREATE TABLE IF NOT EXISTS `movie_review` (
-  `id`       INT AUTO_INCREMENT PRIMARY KEY,
-  `movie_id` INT NOT NULL,
-  `user_id`  INT NOT NULL,
-  `review`   TEXT,
-  `rating`   INT,
-  FOREIGN KEY (`user_id`) REFERENCES `user`(`id`)
+  `id`      INT AUTO_INCREMENT PRIMARY KEY,
+  `movieId` INT NOT NULL,
+  `userId`  INT NOT NULL,
+  `review`  TEXT,
+  `rating`  INT,
+  FOREIGN KEY (`userId`) REFERENCES `user`(`id`)
 );

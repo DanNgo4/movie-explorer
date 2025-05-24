@@ -21,7 +21,25 @@ async function retrieve(id) {
   localStorage.setItem(Constants.LOCAL_STORAGE_CURRENT_MOVIE, JSON.stringify(store.currentMovie));
 }
 
+async function addReview(reviewData) {
+  await MovieService.addReview(reviewData);
+  retrieve(reviewData.movie_id);
+}
+
+async function updateReview(reviewData) {
+  await MovieService.updateReview(reviewData);
+  retrieve(reviewData.movie_id);
+}
+
+async function deleteReview(id) {
+  await MovieService.deleteReview(id);
+  retrieve(id);
+}
+
 export {
   list,
   retrieve,
+  addReview,
+  updateReview,
+  deleteReview,
 };
