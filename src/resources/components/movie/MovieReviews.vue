@@ -11,10 +11,6 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  movieId: {
-    type: Number,
-    required: true
-  }
 });
 
 const reviewForm = ref({
@@ -81,7 +77,7 @@ const submitReview = async () => {
 
   try {
     const model = {
-      movieId : props.movieId,
+      movieId : props.movie.id,
       userId  : store.currentUser.id,
       review  : reviewForm.value.review.trim(),
       rating  : reviewForm.value.rating
@@ -124,7 +120,7 @@ const updateReview = async (reviewId) => {
   try {
     const model = {
       id      : reviewId,
-      movieId : props.movieId,
+      movieId : props.movie.id,
       userId  : store.currentUser.id,
       review  : editForm.value.review.trim(),
       rating  : editForm.value.rating

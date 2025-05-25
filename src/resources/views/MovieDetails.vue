@@ -93,8 +93,7 @@ const formatDate = (dateString) => {
         </div>
       </div>
 
-      <MovieReviews :movie="store.currentMovie"
-                    :movie-id="movieId" />
+      <MovieReviews :movie="store.currentMovie" />
     </article>
   </div>
 </template>
