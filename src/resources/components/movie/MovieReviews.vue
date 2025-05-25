@@ -457,11 +457,12 @@ const deleteReview = async () => {
 
     <div
       v-if="isConfirmingDelete"
-      class="modal d-block"
       tabindex="-1"
       style="background-color: rgba(0,0,0,0.5);"
       role="dialog"
-      aria-modal="true" aria-labelledby="delete-modal-title"
+      aria-modal="true"
+      aria-labelledby="delete-modal-title"
+      class="modal d-block"
     >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
