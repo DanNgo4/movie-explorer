@@ -4,13 +4,13 @@ import { RouterLink, useRouter } from "vue-router";
 
 import * as UserMutation from "@/infrastructure/mutations/user-mutation";
 
-const router = useRouter();
-const email = ref("");
-const password = ref("");
-const showPassword = ref(false);
-const errorMessage = ref("");
+const router         = useRouter();
+const email          = ref("");
+const password       = ref("");
+const showPassword   = ref(false);
+const errorMessage   = ref("");
 const successMessage = ref("");
-const isLoading = ref(false);
+const isLoading      = ref(false);
 
 const isFormValid = computed(() => {
   return email.value.trim() !== ""

@@ -18,7 +18,7 @@ const props = defineProps({
 });
 
 const isLoading = ref(true);
-const movieId = Number(props.id);
+const movieId   = Number(props.id);
 
 onMounted(async () => {
   try {

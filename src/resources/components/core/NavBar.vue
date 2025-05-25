@@ -9,10 +9,10 @@ import { store } from "@/store";
 import * as UserMutation from "@/infrastructure/mutations/user-mutation";
 
 const baseUrl = import.meta.env.BASE_URL;
-const router = useRouter();
-const route = useRoute();
+const router  = useRouter();
+const route   = useRoute();
 
-const menuRef = ref(null);
+const menuRef     = ref(null);
 const userMenuRef = ref(null);
 
 const pages = [

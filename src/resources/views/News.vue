@@ -7,17 +7,17 @@ import Paginator from "primevue/paginator";
 import { Constants } from "@/constants";
 
 const router = useRouter();
-const route = useRoute();
+const route  = useRoute();
 
-const news = ref([]);
+const news  = ref([]);
 const first = ref(0);
-const rows = ref(3);
+const rows  = ref(3);
 
-const searchTitle = ref("");
-const searchContent = ref("");
+const searchTitle    = ref("");
+const searchContent  = ref("");
 const searchCategory = ref("");
-const startDate = ref("");
-const endDate = ref("");
+const startDate      = ref("");
+const endDate        = ref("");
 
 const initialiseFromQuery = () => {
   const query = route.query;

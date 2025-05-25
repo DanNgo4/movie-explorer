@@ -24,10 +24,10 @@ const errors = ref({
   confirmPassword: "",
 });
 
-const showPassword = ref(false);
-const isLoading = ref(false);
+const showPassword   = ref(false);
+const isLoading      = ref(false);
 const successMessage = ref("");
-const errorMessage = ref("");
+const errorMessage   = ref("");
 
 const validateName = (name, field) => {
   if (!name) {

@@ -5,8 +5,8 @@ import { store } from "@/store";
 
 import { Constants } from "@/constants";
 
-const firstName = ref("");
-const lastName = ref("");
+const firstName     = ref("");
+const lastName      = ref("");
 const selectedImage = ref("mountain");
 
 onMounted(() => {

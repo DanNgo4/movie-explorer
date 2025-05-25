@@ -14,7 +14,7 @@ import { store } from "@/store";
 import { Constants } from "@/constants";
 
 const router = useRouter();
-const route = useRoute();
+const route  = useRoute();
 
 const movies = ref([]);
 const first  = ref(0);
