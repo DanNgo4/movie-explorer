@@ -118,7 +118,9 @@ const logout = () => {
 
       <template v-else>
         <RouterLink
-          :to="'/login'"
+          v-for="authPage in authPages"
+          :key="authPage.route"
+          :to="authPage.route"
           :class="[
             'text-decoration-none',
             'px-3',
@@ -126,35 +128,14 @@ const logout = () => {
             'rounded',
             'transition-all',
             {
-              'bg-primary text-white fw-semibold': route.path === '/login',
-              'text-primary': route.path !== '/login',
-              'hover-bg-primary-subtle': route.path !== '/login'
+              'border border-dark': authPage.route === '/signup',
+              'bg-primary text-white fw-semibold': route.path === authPage.route,
+              'text-primary': route.path !== authPage.route,
+              'hover-bg-primary-subtle': route.path !== authPage.route
             }
           ]"
         >
-          Log In
-        </RouterLink>
-
-        <RouterLink
-          :to="'/signup'"
-          :class="[
-            'text-decoration-none',
-            'px-3',
-            'py-2',
-            'rounded',
-            'border',
-            'border-dark',
-            'transition-all',
-            {
-              'bg-primary text-white fw-semibold': route.path === '/signup',
-
-              'text-primary': route.path !== '/signup',
-
-              'hover-bg-primary-subtle': route.path !== '/signup'
-            }
-          ]"
-        >
-          Sign Up
+          {{ authPage.label }}
         </RouterLink>
       </template>
     </section>
@@ -162,6 +143,7 @@ const logout = () => {
     <section class="d-flex d-lg-none align-items-center gap-2">
       <div v-if="store.currentUser" class="d-flex align-items-center gap-2">
         <i class="bi bi-person-circle fs-5"></i>
+
         <span class="small">Hi {{ store.currentUser.firstName }}</span>
       </div>
 
@@ -194,7 +176,7 @@ const logout = () => {
               :href="`${baseUrl}/#${item.route}`"
               @click="navigate"
               :class="[
-                'text-white text-decoration-none px-4 py-3 d-flex align-items-center mobile-transition',
+                'text-white text-decoration-none px-4 py-3 d-flex align-items-center transition-all',
                 {
                   'mobile-active-page fw-semibold': route.path === item.route
                                                 || (item.route === '/' && route.path === '/')
@@ -222,10 +204,6 @@ const logout = () => {
 
 <style scoped>
 .transition-all {
-  transition: all 0.3s ease;
-}
-
-.mobile-transition {
   transition: all 0.3s ease;
 }
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 
 import * as UserMutation from "@/infrastructure/mutations/user-mutation";
@@ -11,6 +11,11 @@ const showPassword = ref(false);
 const errorMessage = ref("");
 const successMessage = ref("");
 const isLoading = ref(false);
+
+const isFormValid = computed(() => {
+  return email.value.trim() !== ""
+      && password.value.trim() !== "";
+});
 
 const handleSubmit = async () => {
   if (!email.value || !password.value) {
@@ -101,12 +106,12 @@ const handleSubmit = async () => {
                            class="form-control" />
 
                     <button
-                      class="btn btn-outline-secondary"
                       type="button"
                       @click="showPassword = !showPassword"
                       :disabled="isLoading"
                       :aria-label="showPassword ? 'Hide password' : 'Show password'"
                       :aria-pressed="showPassword"
+                      class="btn btn-outline-secondary"
                     >
                       <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
                     </button>
@@ -115,7 +120,7 @@ const handleSubmit = async () => {
 
                 <button
                   type="submit"
-                  :disabled="isLoading"
+                  :disabled="!isFormValid || isLoading"
                   class="btn btn-primary w-100 mb-3"
                 >
                   <span
@@ -158,10 +163,5 @@ const handleSubmit = async () => {
 
 .btn-primary {
   padding: 0.75rem;
-}
-
-.form-control:focus {
-  box-shadow: none;
-  border-color: #0d6efd;
 }
 </style>

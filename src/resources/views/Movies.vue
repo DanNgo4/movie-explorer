@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, computed, watch, onUnmounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
 import Paginator from "primevue/paginator";
 
@@ -12,6 +13,9 @@ import { store } from "@/store";
 
 import { Constants } from "@/constants";
 
+const router = useRouter();
+const route = useRoute();
+
 const movies = ref([]);
 const first  = ref(0);
 const rows   = ref(6);
@@ -22,12 +26,71 @@ const sortBy         = ref("default");
 
 let isLoading = ref(false);
 
+const initialiseFromQuery = () => {
+  const query = route.query;
+
+  if (query.search) {
+    searchTitle.value = query.search;
+  }
+
+  if (query.genres) {
+    const genreIds = query.genres.split(',').map(id => parseInt(id)).filter(id => !isNaN(id));
+    selectedGenres.value = genreIds;
+  }
+
+  if (query.sort) {
+    sortBy.value = query.sort;
+  }
+
+  if (query.page) {
+    const page = parseInt(query.page);
+    if (!isNaN(page) && page > 0) {
+      first.value = (page - 1) * rows.value;
+    }
+  }
+
+  if (query.rows) {
+    const rowsPerPage = parseInt(query.rows);
+    if (!isNaN(rowsPerPage) && [3, 6, 9, 12].includes(rowsPerPage)) {
+      rows.value = rowsPerPage;
+    }
+  }
+};
+
+const updateQueryParams = () => {
+  const query = {};
+
+  if (searchTitle.value) {
+    query.search = searchTitle.value;
+  }
+
+  if (selectedGenres.value.length > 0) {
+    query.genres = selectedGenres.value.join(',');
+  }
+
+  if (sortBy.value !== 'default') {
+    query.sort = sortBy.value;
+  }
+
+  if (first.value > 0) {
+    query.page = Math.floor(first.value / rows.value) + 1;
+  }
+
+  if (rows.value !== 6) {
+    query.rows = rows.value;
+  }
+
+  router.replace({ query });
+};
+
 onMounted(async () => {
   try {
     isLoading.value = true;
 
     await MovieMutations.list();
     movies.value = store.movies;
+
+    initialiseFromQuery();
 
     isLoading.value = false;
   } catch (error) {
@@ -73,6 +136,7 @@ const filteredAndSortedMovies = computed(() => {
       if (movie.genre_ids && Array.isArray(movie.genre_ids)) {
         return movie.genre_ids.some(genreId => selectedGenres.value.includes(genreId));
       }
+
       return false;
     });
   }
@@ -120,13 +184,26 @@ const resetPagination = () => {
   first.value = 0;
 };
 
-watch([searchTitle, selectedGenres, sortBy], resetPagination);
+watch(
+  [searchTitle, selectedGenres, sortBy],
+  () => {
+    resetPagination();
+    updateQueryParams();
+  },
+  { deep: true }
+);
+
+watch([first, rows], () => {
+  updateQueryParams();
+});
 
 const clearFilters = () => {
   searchTitle.value    = "";
   selectedGenres.value = [];
   sortBy.value         = "default";
   resetPagination();
+
+  router.replace({ query: {} });
 };
 
 const resultCount = computed(() => {
@@ -241,16 +318,27 @@ onUnmounted(() => {
                   :class="{ 'd-block': showGenreDropdown, 'd-none': !showGenreDropdown }"
                 >
                   <div class="px-3 py-2 border-bottom">
-                    <div class="form-check d-flex align-items-center gap-2">
+                    <div class="form-check d-flex align-items-center gap-2 mb-0">
                       <input type="checkbox"
                              class="form-check-input"
                              id="selectAll"
-                             @change="selectedGenres.length === availableGenres.length ? selectedGenres = [] : selectedGenres = availableGenres.map(g => g.id)"
+                             @change="selectedGenres.length === availableGenres.length
+                               ? selectedGenres = []
+                               : selectedGenres = availableGenres.map(g => g.id)
+                             "
                              :checked="selectedGenres.length === availableGenres.length"
                              :indeterminate="selectedGenres.length > 0 && selectedGenres.length < availableGenres.length" />
 
-                      <label class="form-check-label fw-bold" for="selectAll">
-                        {{ selectedGenres.length === availableGenres.length ? 'Deselect All' : 'Select All' }}
+                      <label
+                        for="selectAll"
+                        class="fw-bold d-block w-100 py-1"
+                        style="cursor: pointer;"
+                      >
+                        {{
+                          selectedGenres.length === availableGenres.length
+                            ? 'Deselect All'
+                            : 'Select All'
+                        }}
                       </label>
                     </div>
                   </div>
@@ -263,7 +351,7 @@ onUnmounted(() => {
                       :aria-selected="selectedGenres.includes(genre.id)"
                       class="px-3 py-1"
                     >
-                      <div class="form-check d-flex align-items-center gap-2">
+                      <div class="form-check d-flex align-items-center gap-2 mb-0">
                         <input type="checkbox"
                                :id="`genre-${genre.id}`"
                                :value="genre.id"
@@ -271,7 +359,11 @@ onUnmounted(() => {
                                :checked="selectedGenres.includes(genre.id)"
                                class="form-check-input" />
 
-                        <label class="form-check-label" :for="`genre-${genre.id}`">
+                        <label
+                          :for="`genre-${genre.id}`"
+                          class="d-block w-100 py-1"
+                          style="cursor: pointer;"
+                        >
                           {{ genre.name }}
                         </label>
                       </div>
@@ -323,8 +415,8 @@ onUnmounted(() => {
               <button
                 type="button"
                 @click="clearFilters"
-                class="btn btn-outline-secondary w-100"
                 aria-label="Clear all filters and search"
+                class="btn btn-outline-secondary w-100"
               >
                 <i class="bi bi-x-circle me-1"></i>
 
@@ -373,11 +465,12 @@ onUnmounted(() => {
 
       <h3 class="mt-3 text-muted">No movies found</h3>
 
-      <p class="text-muted">
+      <p class="text-muted d-flex justify-content-center align-items-center">
         Try adjusting your search criteria or
+
         <button
           @click="clearFilters"
-          class="btn btn-link p-0 text-decoration-underline"
+          class="btn btn-link p-0 text-decoration-underline ms-1"
         >
           clear all filters
         </button>
@@ -410,30 +503,13 @@ onUnmounted(() => {
   position: relative;
 }
 
-.btn:hover {
-  border-color: #86b7fe !important;
-}
-
 .btn:focus {
-  border-color: #86b7fe !important;
-  outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
-}
-
-.form-check {
-  margin-bottom: 0;
 }
 
 .form-check-input:indeterminate {
   background-color: #0d6efd;
   border-color: #0d6efd;
-}
-
-.form-check-label {
-  cursor: pointer;
-  padding: 0.25rem 0;
-  display: block;
-  width: 100%;
 }
 
 .form-check:hover {

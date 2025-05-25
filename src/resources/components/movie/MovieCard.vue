@@ -32,23 +32,24 @@ const releaseYear = computed(() => {
 </script>
 
 <template>
-  <div class="card h-100 movie-card">
+  <div class="card h-100 movie-card cursor-pointer">
     <RouterLink
       :to="{ name: 'movie-details', params: { id: movie.id } }"
       class="text-decoration-none movie-link"
       :aria-label="`View details for ${movie.title}${releaseYear ? ` (${releaseYear})` : ''}`"
     >
-      <img
-        :src="`${Constants.API_URL_MOVIE_POSTER}/${movie.poster_path}`"
-        :alt="`${movie.title} movie poster${releaseYear ? ` from ${releaseYear}` : ''}`"
-        class="card-img-top"
-        loading="lazy"
-      />
+      <img :src="`${Constants.API_URL_MOVIE_POSTER}/${movie.poster_path}`"
+           :alt="`${movie.title} movie poster${releaseYear ? ` from ${releaseYear}` : ''}`"
+           loading="lazy"
+           class="card-img-top" />
 
       <div class="card-body">
         <h3 class="card-title text-dark h5">
           {{ movie.title }}
-          <span v-if="releaseYear" class="text-muted fs-6">({{ releaseYear }})</span>
+
+          <span v-if="releaseYear" class="text-muted fs-6">
+            ({{ releaseYear }})
+          </span>
         </h3>
 
         <div class="d-flex align-items-center mb-2">
@@ -81,7 +82,6 @@ const releaseYear = computed(() => {
 <style scoped>
 .movie-card {
   transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
 }
 
 .movie-card:hover {
@@ -89,23 +89,8 @@ const releaseYear = computed(() => {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
-.movie-card:focus-within {
-  outline: 2px solid #0d6efd;
-  outline-offset: 2px;
-}
-
 .movie-link:hover {
   background-color: transparent !important;
-}
-
-.movie-link:focus {
-  outline: 2px solid #0d6efd;
-  outline-offset: 2px;
-  border-radius: 0.375rem;
-}
-
-.card-img-top {
-  object-fit: cover;
 }
 
 .badge {

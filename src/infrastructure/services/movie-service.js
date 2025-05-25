@@ -76,6 +76,7 @@ async function retrieve(id) {
 
       reviews.forEach(review => {
         const user = userMap[review.userId];
+
         review.user = {
           id        : user.id,
           firstName : user.firstName,

@@ -20,7 +20,7 @@ import { Constants } from "@/constants";
           <RouterLink to="/movies">
             <img :src="Constants.API_URL_MOVIE_IMAGE1"
                   alt="Cinema entrance"
-                  class="card-img-top object-fit-cover"
+                  class="card-img-top"
                   style="height: 250px;" />
 
             <div class="card-body">
@@ -39,7 +39,7 @@ import { Constants } from "@/constants";
           <RouterLink to="/news">
             <img :src="Constants.API_URL_MOVIE_IMAGE2"
                   alt="Movie theater interior"
-                  class="card-img-top object-fit-cover"
+                  class="card-img-top"
                   style="height: 250px;" />
 
           <div class="card-body">

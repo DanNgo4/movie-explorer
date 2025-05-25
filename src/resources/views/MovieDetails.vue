@@ -3,6 +3,8 @@ import { ref, onMounted, defineProps } from "vue";
 
 import { store } from "@/store";
 
+import { Constants } from "@/constants";
+
 import * as MovieMutations from "@/infrastructure/mutations/movie-mutations";
 
 import LoadingSpinner from "@/resources/components/core/LoadingSpinner.vue";
@@ -47,11 +49,9 @@ const formatDate = (dateString) => {
       <div class="card shadow-sm">
         <div class="row g-0">
           <aside class="col-md-4 col-lg-3 p-3">
-            <img
-              :src="`https://image.tmdb.org/t/p/w500${store.currentMovie.poster_path}`"
-              :alt="store.currentMovie.title"
-              class="img-fluid rounded shadow-sm"
-            />
+            <img :src="`${Constants.API_URL_MOVIE_POSTER2}${store.currentMovie.poster_path}`"
+                 :alt="store.currentMovie.title"
+                 class="img-fluid rounded shadow-sm" />
           </aside>
 
           <div class="col-md-8 col-lg-9 p-4">
@@ -106,7 +106,7 @@ const formatDate = (dateString) => {
 
 <style scoped>
 .movie-details {
-  background-color: #f8f9fa;
+  background-color: #F8F9FA;
 }
 
 .badge {

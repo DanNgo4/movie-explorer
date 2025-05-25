@@ -25,3 +25,7 @@ p {
 a:hover {
   background-color: hsla(209, 78%, 49%, 0.2);
 }
+
+.card-img-top {
+  object-fit: cover;
+}

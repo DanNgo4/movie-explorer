@@ -191,7 +191,7 @@ const deleteReview = async () => {
         >
           <i class="bi bi-info-circle me-2"></i>
 
-          You have written {{ userReviewsCount }} review{{ userReviewsCount > 1 ? 's' : '' }} for this movie.
+          You have written {{ userReviewsCount }} review {{ userReviewsCount > 1 ? 's' : '' }} for this movie.
         </div>
 
         <h5 class="mb-3">
@@ -280,7 +280,7 @@ const deleteReview = async () => {
       <div v-else class="alert alert-info mb-4">
         <i class="bi bi-info-circle me-2"></i>
 
-        Please <RouterLink to="/login" class="alert-link">log in</RouterLink> to write a review.
+        Please <RouterLink to="/login" class="alert-link text-decoration-underline">log in</RouterLink> to write a review.
       </div>
 
       <div v-if="movie.reviews && movie.reviews.length > 0">
@@ -392,7 +392,7 @@ const deleteReview = async () => {
                     Update your rating from 0 to 10
                   </div>
                 </div>
-                
+
                 <div class="mb-3">
                   <label
                     :for="`edit-review-${review.id}`"

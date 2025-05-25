@@ -1,7 +1,13 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
 import Paginator from "primevue/paginator";
+
+import { Constants } from "@/constants";
+
+const router = useRouter();
+const route = useRoute();
 
 const news = ref([]);
 const first = ref(0);
@@ -13,11 +19,85 @@ const searchCategory = ref("");
 const startDate = ref("");
 const endDate = ref("");
 
+const initialiseFromQuery = () => {
+  const query = route.query;
+
+  if (query.title) {
+    searchTitle.value = query.title;
+  }
+
+  if (query.content) {
+    searchContent.value = query.content;
+  }
+
+  if (query.category) {
+    searchCategory.value = query.category;
+  }
+
+  if (query.startDate) {
+    startDate.value = query.startDate;
+  }
+
+  if (query.endDate) {
+    endDate.value = query.endDate;
+  }
+
+  if (query.page) {
+    const page = parseInt(query.page);
+    if (!isNaN(page) && page > 0) {
+      first.value = (page - 1) * rows.value;
+    }
+  }
+
+  if (query.rows) {
+    const rowsPerPage = parseInt(query.rows);
+    if (!isNaN(rowsPerPage) && [3, 5, 10].includes(rowsPerPage)) {
+      rows.value = rowsPerPage;
+    }
+  }
+};
+
+const updateQueryParams = () => {
+  const query = {};
+
+  if (searchTitle.value) {
+    query.title = searchTitle.value;
+  }
+
+  if (searchContent.value) {
+    query.content = searchContent.value;
+  }
+
+  if (searchCategory.value) {
+    query.category = searchCategory.value;
+  }
+
+  if (startDate.value) {
+    query.startDate = startDate.value;
+  }
+
+  if (endDate.value) {
+    query.endDate = endDate.value;
+  }
+
+  if (first.value > 0) {
+    query.page = Math.floor(first.value / rows.value) + 1;
+  }
+
+  if (rows.value !== 3) {
+    query.rows = rows.value;
+  }
+
+  router.replace({ query });
+};
+
 onMounted(async () => {
   try {
-    const response = await fetch(`${import.meta.env.BASE_URL}/news.json`);
+    const response = await fetch(Constants.API_URL_NEWS);
 
     news.value = (await response.json()).news;
+
+    initialiseFromQuery();
   } catch (error) {
     console.error("Failed to load news.json:", error);
   }
@@ -54,6 +134,22 @@ function onPage(event) {
   first.value = event.first;
   rows.value = event.rows;
 }
+
+const resetPagination = () => {
+  first.value = 0;
+};
+
+watch(
+  [searchTitle, searchContent, searchCategory, startDate, endDate],
+  () => {
+    resetPagination();
+    updateQueryParams();
+  }
+);
+
+watch([first, rows], () => {
+  updateQueryParams();
+});
 
 const categories = computed(() => {
   return [...new Set(news.value.map(article => article.category))];

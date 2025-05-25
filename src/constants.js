@@ -9,12 +9,14 @@ export class Constants {
   static API_URL_MOVIE_LIST     = `https://api.themoviedb.org/3/discover/movie?api_key=${Constants.TMDB_API_KEY}&include_adult=false&with_genres=16`;
   static API_URL_MOVIE          = "https://api.themoviedb.org/3/movie";
   static API_URL_MOVIE_POSTER   = "https://image.tmdb.org/t/p/original";
+  static API_URL_MOVIE_POSTER2  = "https://image.tmdb.org/t/p/w500";
   static API_URL_MOVIE_REVIEW   = `${import.meta.env.BASE_URL}/apis_movie_review.php`;
   static API_URL_USER           = `${import.meta.env.BASE_URL}/apis_user.php`;
   static API_URL_MOVIE_IMAGE1   = "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80";
   static API_URL_MOVIE_IMAGE2   = "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80";
   static API_URL_MOUNTAIN_IMAGE = "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80";
   static API_URL_OCEAN_IMAGE    = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80";
+  static API_URL_NEWS           = `${import.meta.env.BASE_URL}/news.json`;
 
   // Genre Map
   static GENRE_MAP = {
