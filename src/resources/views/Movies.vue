@@ -42,17 +42,17 @@ const initialiseFromQuery = () => {
     sortBy.value = query.sort;
   }
 
-  if (query.page) {
-    const page = parseInt(query.page);
-    if (!isNaN(page) && page > 0) {
-      first.value = (page - 1) * rows.value;
-    }
-  }
-
   if (query.rows) {
     const rowsPerPage = parseInt(query.rows);
     if (!isNaN(rowsPerPage) && [3, 6, 9, 12].includes(rowsPerPage)) {
       rows.value = rowsPerPage;
+    }
+  }
+
+  if (query.page) {
+    const page = parseInt(query.page);
+    if (!isNaN(page) && page > 0) {
+      first.value = (page - 1) * rows.value;
     }
   }
 };
@@ -478,6 +478,7 @@ onUnmounted(() => {
     </section>
 
     <Paginator v-if="!isLoading && resultCount > 0"
+               :first="first"
                :rows="rows"
                :totalRecords="resultCount"
                :rowsPerPageOptions="[3, 6, 9, 12]"

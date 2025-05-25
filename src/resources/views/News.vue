@@ -42,17 +42,17 @@ const initialiseFromQuery = () => {
     endDate.value = query.endDate;
   }
 
-  if (query.page) {
-    const page = parseInt(query.page);
-    if (!isNaN(page) && page > 0) {
-      first.value = (page - 1) * rows.value;
-    }
-  }
-
   if (query.rows) {
     const rowsPerPage = parseInt(query.rows);
     if (!isNaN(rowsPerPage) && [3, 5, 10].includes(rowsPerPage)) {
       rows.value = rowsPerPage;
+    }
+  }
+
+  if (query.page) {
+    const page = parseInt(query.page);
+    if (!isNaN(page) && page > 0) {
+      first.value = (page - 1) * rows.value;
     }
   }
 };
@@ -306,7 +306,8 @@ const truncateContent = (content, maxLength = 300) => {
       </div>
     </section>
 
-    <Paginator :rows="rows"
+    <Paginator :first="first"
+               :rows="rows"
                :totalRecords="filteredNews.length"
                :rowsPerPageOptions="[3, 5, 10]"
                :showFirstLastPageLink="true"
