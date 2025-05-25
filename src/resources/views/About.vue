@@ -65,9 +65,9 @@ const images = {
         </div>
       </div>
 
-      <div v-if="welcomeMessage" class="alert alert-success fs-5">
+      <p v-if="welcomeMessage" class="alert alert-success fs-5">
         {{ welcomeMessage }}
-      </div>
+      </p>
     </section>
 
     <section>
