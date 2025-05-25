@@ -48,4 +48,6 @@ export class Constants {
     10767: "Talk",
     10768: "War & Politics"
   };
-}
+};
+
+Object.freeze(Constants);
