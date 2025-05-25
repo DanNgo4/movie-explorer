@@ -135,10 +135,6 @@ function onPage(event) {
   rows.value = event.rows;
 }
 
-const resetPagination = () => {
-  first.value = 0;
-};
-
 watch(
   [searchTitle, searchContent, searchCategory, startDate, endDate, first, rows],
   () => {
