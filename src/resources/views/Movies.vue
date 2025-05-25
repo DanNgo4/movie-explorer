@@ -34,7 +34,11 @@ const initialiseFromQuery = () => {
   }
 
   if (query.genres) {
-    const genreIds = query.genres.split(',').map(id => parseInt(id)).filter(id => !isNaN(id));
+    const genreIds = query.genres
+      .split(",")
+      .map(id => parseInt(id))
+      .filter(id => !isNaN(id));
+
     selectedGenres.value = genreIds;
   }
 
@@ -65,10 +69,10 @@ const updateQueryParams = () => {
   }
 
   if (selectedGenres.value.length > 0) {
-    query.genres = selectedGenres.value.join(',');
+    query.genres = selectedGenres.value.join(",");
   }
 
-  if (sortBy.value !== 'default') {
+  if (sortBy.value !== "default") {
     query.sort = sortBy.value;
   }
 
@@ -185,17 +189,12 @@ const resetPagination = () => {
 };
 
 watch(
-  [searchTitle, selectedGenres, sortBy],
+  [searchTitle, selectedGenres, sortBy, first, rows],
   () => {
-    resetPagination();
     updateQueryParams();
   },
   { deep: true }
 );
-
-watch([first, rows], () => {
-  updateQueryParams();
-});
 
 const clearFilters = () => {
   searchTitle.value    = "";

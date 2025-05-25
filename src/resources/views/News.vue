@@ -140,16 +140,12 @@ const resetPagination = () => {
 };
 
 watch(
-  [searchTitle, searchContent, searchCategory, startDate, endDate],
+  [searchTitle, searchContent, searchCategory, startDate, endDate, first, rows],
   () => {
-    resetPagination();
     updateQueryParams();
-  }
+  },
+  { deep: true }
 );
-
-watch([first, rows], () => {
-  updateQueryParams();
-});
 
 const categories = computed(() => {
   return [...new Set(news.value.map(article => article.category))];
