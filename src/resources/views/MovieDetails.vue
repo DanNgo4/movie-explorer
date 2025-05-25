@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted, defineProps } from "vue";
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
 
 import { store } from "@/store";
 
@@ -10,15 +11,9 @@ import * as MovieMutations from "@/infrastructure/mutations/movie-mutations";
 import LoadingSpinner from "@/resources/components/core/LoadingSpinner.vue";
 import MovieReviews from "@/resources/components/movie/MovieReviews.vue";
 
-const props = defineProps({
-  id: {
-    type: String,
-    required: true
-  },
-});
-
 const isLoading = ref(true);
-const movieId   = Number(props.id);
+const route     = useRoute();
+const movieId   = Number(route.params.id);
 
 onMounted(async () => {
   try {
